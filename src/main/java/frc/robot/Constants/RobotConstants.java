@@ -1,0 +1,16 @@
+// make sure to set these later
+
+public final class RobotConstants {
+
+	public static final class DriveConstants {
+		public static enum ModuleOrientation {
+			FRONT_LEFT,
+			FRONT_RIGHT,
+			BACK_LEFT,
+			BACK_RIGHT
+		}
+
+		public static final double WHEEL_RADIUS_METERS = 1.0;
+
+	}
+}
