@@ -11,6 +11,7 @@ public final class RobotConstants {
 		}
 
 		public static final double WHEEL_RADIUS_METERS = 1.0;
+		public static final Translation2d[] MODULE_OFFSETS = {};
 
 	}
 }
