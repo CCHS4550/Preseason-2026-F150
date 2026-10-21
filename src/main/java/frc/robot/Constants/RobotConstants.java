@@ -1,5 +1,7 @@
 // make sure to set these later
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 public final class RobotConstants {
 
 	public static final class DriveConstants {

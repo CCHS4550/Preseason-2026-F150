@@ -9,14 +9,14 @@ import frc.robot.Subsystems.Swerve.Module.ModuleIO.ModuleIOInputs;
 
 // add logging if you feel like it
 
-public class Module {
+public class SwerveModule {
 	private final ModuleIO io;
 	private final ModuleIOInputs inputs = new ModuleIOInputs();
 	private final DriveConstants.ModuleOrientation moduleOrientation;
 
 	private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
-	public Module(ModuleIO io, DriveConstants.ModuleOrientation moduleOrientation) {
+	public SwerveModule(ModuleIO io, DriveConstants.ModuleOrientation moduleOrientation) {
 		this.io = io;
 		this.moduleOrientation = moduleOrientation;
 	}
