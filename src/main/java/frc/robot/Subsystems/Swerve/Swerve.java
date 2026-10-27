@@ -5,6 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.DriveConstants;
@@ -38,6 +39,8 @@ public class Swerve extends SubsystemBase {
 	// private final SwerveSetpointGenerator setPointGenerator;
 	// private SwerveSetpoint previousSetpoint; maybe later
 
+	//do we need chassis speed?
+
 
 	private double xJoystickInput = 0.0;
   	private double yJoystickInput = 0.0;
@@ -57,8 +60,8 @@ public class Swerve extends SubsystemBase {
 		IDLE,
 	}
 
-	private SystemState systemState = SystemState.TELEOP_DRIVE;
-	private WantedState wantedState = WantedState.TELEOP_DRIVE;
+	private SystemState systemState = SystemState.IDLE;
+	private WantedState wantedState = WantedState.IDLE;
 
 	public Swerve(
 		ModuleIO flModuleIO,
@@ -72,25 +75,54 @@ public class Swerve extends SubsystemBase {
     	modules[2] = new SwerveModule(blModuleIO, ModuleOrientation.BACK_LEFT);
    	 	modules[3] = new SwerveModule(brModuleIO, ModuleOrientation.BACK_RIGHT);
 	}
-}
 	
-@Override
-public void periodic()
-{
-	odometryLock.lock();
-	for(var module : modules)
+	@Override
+	public void periodic()
 	{
-		module.periodic();
-	}
-	odometryLock.unlock();
+		odometryLock.lock();
+		for(var module : modules)
+		{
+			module.periodic();
+		}
+		odometryLock.unlock();
 
-	if (DriverStation.isDisabled()) 
+		if (DriverStation.isDisabled()) 
+		{
+			for (var module : modules) 
+			{
+				module.stop();
+			}
+		}
+
+	}
+	//handle state transitions
+
+	private void applyStates()
 	{
-      	for (var module : modules) 
-	  	{
-      	 	module.stop();
-      	}
+		switch(systemState)
+		{
+			default:
+			case AUTO:
+				break;
+			case TELEOP_DRIVE:
+				break;
+		}
+
+		public SwerveModuleState[] getModuleState()
+		{
+			SwerveModuleState[] states = new SwerveModuleState[4];
+			for(int i = 0; i < 4; i++)
+			{
+				states[i] = modules[i].getState();
+			}
+		}
+		public SwerveModulePosition[] getModulePosition()
+		{
+			SwerveModulePosition[] states = new SwerveModulePosition[4];
+			for(int i = 0; i < 4; i++)
+			{
+				states[i] = modules[i].getPosition();
+			}
+		}
 	}
-
-
 }
