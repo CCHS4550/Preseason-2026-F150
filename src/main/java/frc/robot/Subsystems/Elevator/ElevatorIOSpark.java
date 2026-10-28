@@ -14,6 +14,7 @@ public class ElevatorIOSpark implements ElevatorIO {
     public ElevatorIOSpark(){
 
         SparkMax elevatorSpark = new SparkMax(Constants.ElevatorConstants.elevatorCanID, MotorType.kBrushless);
+        elevatorEncoder = elevatorSpark.getEncoder();
     
         @Override
         public void stopElevator() {
@@ -32,21 +33,23 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         @Override
         public void setPosition(double position) {
-        
+            elevatorEncoder.setPosition(position);
         }
 
         @Override
         public double getPosition() {
-        
+            return elevatorEncoder.getPosition();
         }
 
         @Override
         public double getVelocity() {
-            return 0.0;
+            return elevatorEncoder.getVelocity();
         }
 
         @Override
         public void resetEncoder() {
+            elevatorEncoder.setPosition(0);
+
         }
     }
 
