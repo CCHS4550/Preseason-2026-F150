@@ -23,7 +23,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         @Override
         public void setSpeed(double speed) {
-            
+            elevatorEncoder.setVelocity(speed);
      }
 
         @Override
