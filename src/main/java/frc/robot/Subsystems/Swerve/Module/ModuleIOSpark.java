@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.Drive.Module;
+package frc.robot.Subsystems.Swerve.Module;
 
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
@@ -11,7 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-import frc.robot.Constants.RobotDriveConstants;
+import frc.robot.Constants.RobotConstants.DriveConstants;
 
 // initiate the hardware and define interface methods
 // call 4 times for all 4 modules
@@ -45,20 +45,20 @@ public class ModuleIOSpark implements ModuleIO {
     public ModuleIOSpark(ModuleOrientation module) { 
         rotationOffset =
             switch (module) {
-                FRONT_LEFT -> DriveConstants.frontLeftOffset;
-                FRONT_RIGHT -> DriveConstants.frontRightOffset;
-                BACK_LEFT -> DriveConstants.backLeftOffset;
-                BACK_RIGHT -> DriveConstants.backRightOffset;
+                case FRONT_LEFT -> DriveConstants.frontLeftOffset
+                case FRONT_RIGHT -> DriveConstants.frontRightOffset
+                case BACK_LEFT -> DriveConstants.backLeftOffset
+                case BACK_RIGHT -> DriveConstants.backRightOffset
                 default -> new Rotation2d();
             };
 
 
         turnSpark = new SparkMax(
             switch (module) {
-                FRONT_LEFT -> DriveConstants.frontLeftTurnCanId;
-                FRONT_RIGHT -> DriveConstants.frontRightTurnCanId;
-                BACK_LEFT -> DriveConstants.backLeftTurnCanId;
-                BACK_RIGHT -> DriveConstants.backRightTurnCanId;
+                case FRONT_LEFT -> DriveConstants.frontLeftTurnCanId
+                case FRONT_RIGHT -> DriveConstants.frontRightTurnCanId
+                case BACK_LEFT -> DriveConstants.backLeftTurnCanId
+                case BACK_RIGHT -> DriveConstants.backRightTurnCanId
                 default -> 0;
             },
             MotorType.kBrushless);
@@ -67,10 +67,10 @@ public class ModuleIOSpark implements ModuleIO {
         //just takes the encoders and converts it so we understand it
         absoluteAnalogInput = new AnalogInput(
             switch (module) {
-                FRONT_LEFT -> DriveConstants.frontLeftTurnEncoder;
-                FRONT_RIGHT -> DriveConstants.frontRightTurnEncoder;
-                BACK_LEFT -> DriveConstants.backLeftTurnEncoder;
-                BACK_RIGHT -> DriveConstants.backRightTurnEncoder;
+                case FRONT_LEFT -> DriveConstants.frontLeftTurnEncoder
+                case FRONT_RIGHT -> DriveConstants.frontRightTurnEncoder
+                case BACK_LEFT -> DriveConstants.backLeftTurnEncoder
+                case BACK_RIGHT -> DriveConstants.backRightTurnEncoder
                 default -> 0;
             });
         //define
@@ -79,10 +79,10 @@ public class ModuleIOSpark implements ModuleIO {
 
         driveSpark = new SparkMax(
             switch (module) {
-                FRONT_LEFT -> DriveConstants.frontLeftDriveCanId;
-                FRONT_RIGHT -> DriveConstants.frontRightDriveCanId;
-                BACK_LEFT -> DriveConstants.backLeftDriveCanId;
-                BACK_RIGHT -> DriveConstants.backRightDriveCanId;
+                case FRONT_LEFT -> DriveConstants.frontLeftDriveCanId
+                case FRONT_RIGHT -> DriveConstants.frontRightDriveCanId
+                case BACK_LEFT -> DriveConstants.backLeftDriveCanId
+                case BACK_RIGHT -> DriveConstants.backRightDriveCanId
                 default -> 0;
             },
             MotorType.kBrushless);
@@ -96,10 +96,10 @@ public class ModuleIOSpark implements ModuleIO {
         SparkMaxConfig turnConfig = new SparkMaxConfig();
         //some are inverted we just set the right ones with FRONT_LEFT-3 to set the right motor
         switch (module) {
-            FRONT_LEFT -> turnConfig.inverted(Constants.DriveConstants.frontLeftTurnInverted);
-            FRONT_RIGHT -> turnConfig.inverted(Constants.DriveConstants.frontRightTurnInverted);
-            BACK_LEFT -> turnConfig.inverted(Constants.DriveConstants.backLeftTurnInverted);
-            BACK_RIGHT -> turnConfig.inverted(Constants.DriveConstants.backRightTurnInverted);
+            case FRONT_LEFT : turnConfig.inverted(Constants.DriveConstants.frontLeftTurnInverted);  break;
+            case FRONT_RIGHT: turnConfig.inverted(Constants.DriveConstants.frontRightTurnInverted); break;
+            case BACK_LEFT  : turnConfig.inverted(Constants.DriveConstants.backLeftTurnInverted);   break;
+            case BACK_RIGHT : turnConfig.inverted(Constants.DriveConstants.backRightTurnInverted);  break;
             default -> turnConfig.inverted(false);
         }
 
@@ -191,7 +191,17 @@ public class ModuleIOSpark implements ModuleIO {
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) { 
-        // update drive motor values and turn
+        inputs.driveConnected = false;
+        inputs.drivePosition_Rad = 0.0;
+        inputs.driveVelocity_RadPerSec = 0.0;
+        inputs.driveAppliedVoltage_Volts = 0.0;
+        inputs.driveCurrent_Amps = 0.0;
+
+        inputs.turnConnected = false;
+        inputs.turnPosition = new Rotation2d();
+        inputs.turnVelocity_RadPerSec = 0.0;
+        inputs.turnAppliedVoltage_Volts = 0.0;
+        inputs.turnCurrent_Amps = 0.0;
     }
 
     @Override

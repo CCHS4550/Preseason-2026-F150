@@ -94,6 +94,8 @@ public class Swerve extends SubsystemBase {
 			}
 		}
 
+		systemState = handleStateTransitions();
+		applyStates();
 	}
 	//handle state transitions
 
@@ -101,28 +103,53 @@ public class Swerve extends SubsystemBase {
 	{
 		switch(systemState)
 		{
-			default:
 			case AUTO:
 				break;
 			case TELEOP_DRIVE:
 				break;
+			case IDLE:
+				break;
+			default:
+				break;
 		}
+	}
 
-		public SwerveModuleState[] getModuleState()
-		{
-			SwerveModuleState[] states = new SwerveModuleState[4];
-			for(int i = 0; i < 4; i++)
-			{
-				states[i] = modules[i].getState();
-			}
+	private SystemState handleStateTransitions() {
+		switch (wantedState) {
+			case TELEOP_DRIVE: 
+				return SystemState.TELEOP_DRIVE;
+			case AUTO: 
+				return SystemState.AUTO;
+			case IDLE:
+				return SystemState.IDLE;
+			default:
+				return SystemState.IDLE;
 		}
-		public SwerveModulePosition[] getModulePosition()
-		{
-			SwerveModulePosition[] states = new SwerveModulePosition[4];
-			for(int i = 0; i < 4; i++)
-			{
-				states[i] = modules[i].getPosition();
-			}
+	}
+
+	public void setWantedState(WantedState wantedState) {
+		if (this.wantedState == wantedState) {
+			return;
 		}
+		this.wantedState = wantedState;
+	}
+
+	public SwerveModuleState[] getModuleState()
+	{
+		SwerveModuleState[] states = new SwerveModuleState[4];
+		for(int i = 0; i < 4; i++)
+		{
+			states[i] = modules[i].getState();
+		}
+		return states;
+	}
+	public SwerveModulePosition[] getModulePosition()
+	{
+		SwerveModulePosition[] positions = new SwerveModulePosition[4];
+		for(int i = 0; i < 4; i++)
+		{
+			positions[i] = new SwerveModulePosition(modules[i].getPosition_Meters(), modules[i].getAngle());
+		}
+		return positions;
 	}
 }
