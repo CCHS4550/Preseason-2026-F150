@@ -4,7 +4,7 @@ public final class RobotConstants {
     public static class ElevatorConstants{
         public static final int elevatorCanID = 999;
         public static final boolean elevatorInverted = false;
-        public static final int elevatornCurrentLimit = 60; 
+        public static final int elevatorCurrentLimit = 60; 
     }
 	
 }
