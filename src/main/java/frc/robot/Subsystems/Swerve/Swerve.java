@@ -3,6 +3,7 @@ package frc.robot.Subsystems.Swerve;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -41,10 +42,7 @@ public class Swerve extends SubsystemBase {
 
 	//do we need chassis speed?
 
-
-	private double xJoystickInput = 0.0;
-  	private double yJoystickInput = 0.0;
-  	private double omegaJoystickInput = 0.0;
+	private ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
 		
 	public enum WantedState
 	{
@@ -106,10 +104,22 @@ public class Swerve extends SubsystemBase {
 			case AUTO:
 				break;
 			case TELEOP_DRIVE:
+				SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(targetChassisSpeeds);
+				for (int i = 0; i < 4; i++) {
+					modules[i].runSwerveState(moduleStates[i]);
+				}
 				break;
 			case IDLE:
+				for (var module : modules) 
+				{
+					module.stop();
+				}
 				break;
 			default:
+				for (var module : modules) 
+				{
+					module.stop();
+				}
 				break;
 		}
 	}
@@ -132,6 +142,9 @@ public class Swerve extends SubsystemBase {
 			return;
 		}
 		this.wantedState = wantedState;
+	}
+	public void setTargetChassisSpeeds(ChassisSpeeds targetChassisSpeeds) {
+		this.targetChassisSpeeds = targetChassisSpeeds;
 	}
 
 	public SwerveModuleState[] getModuleState()
