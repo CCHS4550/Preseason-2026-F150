@@ -27,7 +27,7 @@ public interface ModuleIO {
 
     public default void setTurnAngle(Rotation2d rotation) {}
 
-    public default void setDriveOpenLoop(double voltage) {}
+    public default void setDriveVoltage(double voltage) {}
 
-    public default void setTurnOpenLoop(double voltage) {}
+    public default void setTurnVoltage(double voltage) {}
 }

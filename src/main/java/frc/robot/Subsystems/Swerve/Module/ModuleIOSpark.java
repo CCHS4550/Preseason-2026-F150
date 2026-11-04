@@ -6,8 +6,10 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-//NO PID
-//using open loop which is not coded
+//turn stuff
+import com.revrobotics.spark.SparkClosedLoopController;
+
+//USING CLOSED LOOP
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -23,6 +25,11 @@ public class ModuleIOSpark implements ModuleIO {
     //0 -> front left 1 -> front right 2 -> back left, 3 -> back right
     private final SparkBase driveSpark;
     private final SparkBase turnSpark;
+
+    //CLOSED LOOP CONTROLLER
+    private final SparkClosedLoopController turnClosedLoopController;
+    private final SparkClosedLoopController driveClosedLoopController;
+
 
     //encoders (only need relative for drive)
     private final RelativeEncoder driveEncoder;
@@ -45,20 +52,20 @@ public class ModuleIOSpark implements ModuleIO {
     public ModuleIOSpark(ModuleOrientation module) { 
         rotationOffset =
             switch (module) {
-                case FRONT_LEFT -> DriveConstants.frontLeftOffset
-                case FRONT_RIGHT -> DriveConstants.frontRightOffset
-                case BACK_LEFT -> DriveConstants.backLeftOffset
-                case BACK_RIGHT -> DriveConstants.backRightOffset
+                case FRONT_LEFT -> DriveConstants.frontLeftOffset;
+                case FRONT_RIGHT -> DriveConstants.frontRightOffset;
+                case BACK_LEFT -> DriveConstants.backLeftOffset;
+                case BACK_RIGHT -> DriveConstants.backRightOffset;
                 default -> new Rotation2d();
             };
 
 
         turnSpark = new SparkMax(
             switch (module) {
-                case FRONT_LEFT -> DriveConstants.frontLeftTurnCanId
-                case FRONT_RIGHT -> DriveConstants.frontRightTurnCanId
-                case BACK_LEFT -> DriveConstants.backLeftTurnCanId
-                case BACK_RIGHT -> DriveConstants.backRightTurnCanId
+                case FRONT_LEFT -> DriveConstants.frontLeftTurnCanId;
+                case FRONT_RIGHT -> DriveConstants.frontRightTurnCanId;
+                case BACK_LEFT -> DriveConstants.backLeftTurnCanId;
+                case BACK_RIGHT -> DriveConstants.backRightTurnCanId;
                 default -> 0;
             },
             MotorType.kBrushless);
@@ -67,10 +74,10 @@ public class ModuleIOSpark implements ModuleIO {
         //just takes the encoders and converts it so we understand it
         absoluteAnalogInput = new AnalogInput(
             switch (module) {
-                case FRONT_LEFT -> DriveConstants.frontLeftTurnEncoder
-                case FRONT_RIGHT -> DriveConstants.frontRightTurnEncoder
-                case BACK_LEFT -> DriveConstants.backLeftTurnEncoder
-                case BACK_RIGHT -> DriveConstants.backRightTurnEncoder
+                case FRONT_LEFT -> DriveConstants.frontLeftTurnEncoder;
+                case FRONT_RIGHT -> DriveConstants.frontRightTurnEncoder;
+                case BACK_LEFT -> DriveConstants.backLeftTurnEncoder;
+                case BACK_RIGHT -> DriveConstants.backRightTurnEncoder;
                 default -> 0;
             });
         //define
@@ -79,10 +86,10 @@ public class ModuleIOSpark implements ModuleIO {
 
         driveSpark = new SparkMax(
             switch (module) {
-                case FRONT_LEFT -> DriveConstants.frontLeftDriveCanId
-                case FRONT_RIGHT -> DriveConstants.frontRightDriveCanId
-                case BACK_LEFT -> DriveConstants.backLeftDriveCanId
-                case BACK_RIGHT -> DriveConstants.backRightDriveCanId
+                case FRONT_LEFT -> DriveConstants.frontLeftDriveCanId;
+                case FRONT_RIGHT -> DriveConstants.frontRightDriveCanId;
+                case BACK_LEFT -> DriveConstants.backLeftDriveCanId;
+                case BACK_RIGHT -> DriveConstants.backRightDriveCanId;
                 default -> 0;
             },
             MotorType.kBrushless);
@@ -90,6 +97,9 @@ public class ModuleIOSpark implements ModuleIO {
         turnEncoder = turnSpark.getAbsoluteEncoder();
 
 
+        driveclosedLoopController = driveSpark.getClosedLoopController(); 
+        turnclosedLoopController = turnSpark.getClosedLoopController(); 
+        //ADD PID STUFF CONFIG
 
         //configs
         //turn
@@ -206,20 +216,24 @@ public class ModuleIOSpark implements ModuleIO {
 
     @Override
     //voltage
-    public void setDriveOpenLoop(double output) {
+    public void setDriveVoltage(double output) {
         driveSpark.setVoltage(output);
     }
 
     @Override
-    public void setTurnOpenLoop(double output) {
+    public void setTurnVoltage(double output) {
         turnSpark.setVoltage(output);
     }
 
     @Override
-    public void setDriveVelo(double velo) {}
+    public void setDriveVelocity(double velo) {
+        
+    }
 
     @Override
-    public void setTurnPos(Rotation2d rotation) {}
+    public void setTurnAngle(Rotation2d rotation) {
+
+    }
 
     public double getAbsoluteEncoderVolts() {
         return absoluteAnalogInput.getVoltage();
