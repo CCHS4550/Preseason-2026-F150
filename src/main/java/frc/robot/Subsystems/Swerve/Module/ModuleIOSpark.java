@@ -8,12 +8,18 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 //turn stuff
 import com.revrobotics.spark.SparkClosedLoopController;
+import edu.wpi.first.math.controller.PIDController;
 
 //USING CLOSED LOOP
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import frc.robot.Constants.RobotConstants.DriveConstants;
+import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import edu.wpi.first.math.MathUtil;
 
 // initiate the hardware and define interface methods
 // call 4 times for all 4 modules
@@ -30,6 +36,8 @@ public class ModuleIOSpark implements ModuleIO {
     private final SparkClosedLoopController turnClosedLoopController;
     private final SparkClosedLoopController driveClosedLoopController;
 
+    private final PIDController turnPID =
+        new PIDController(DriveConstants.turnKp, 0.0, DriveConstants.turnKd);
 
     //encoders (only need relative for drive)
     private final RelativeEncoder driveEncoder;
@@ -93,6 +101,7 @@ public class ModuleIOSpark implements ModuleIO {
                 default -> 0;
             },
             MotorType.kBrushless);
+
         driveEncoder = driveSpark.getEncoder();
         turnEncoder = turnSpark.getAbsoluteEncoder();
 
@@ -100,16 +109,16 @@ public class ModuleIOSpark implements ModuleIO {
         driveclosedLoopController = driveSpark.getClosedLoopController(); 
         turnclosedLoopController = turnSpark.getClosedLoopController(); 
         //ADD PID STUFF CONFIG
-
+        turnPID.enableContinuousInput(0, Math.PI);
         //configs
         //turn
         SparkMaxConfig turnConfig = new SparkMaxConfig();
         //some are inverted we just set the right ones with FRONT_LEFT-3 to set the right motor
         switch (module) {
-            case FRONT_LEFT : turnConfig.inverted(Constants.DriveConstants.frontLeftTurnInverted);  break;
-            case FRONT_RIGHT: turnConfig.inverted(Constants.DriveConstants.frontRightTurnInverted); break;
-            case BACK_LEFT  : turnConfig.inverted(Constants.DriveConstants.backLeftTurnInverted);   break;
-            case BACK_RIGHT : turnConfig.inverted(Constants.DriveConstants.backRightTurnInverted);  break;
+            case FRONT_LEFT : turnConfig.inverted(DriveConstants.frontLeftTurnInverted);  break;
+            case FRONT_RIGHT: turnConfig.inverted(DriveConstants.frontRightTurnInverted); break;
+            case BACK_LEFT  : turnConfig.inverted(DriveConstants.backLeftTurnInverted);   break;
+            case BACK_RIGHT : turnConfig.inverted(DriveConstants.backRightTurnInverted);  break;
             default -> turnConfig.inverted(false);
         }
 
@@ -195,23 +204,28 @@ public class ModuleIOSpark implements ModuleIO {
         driveEncoder.setPosition(0.0);
 
         //make odometry queues here the next person can do this
-
+        //No odometry for now (I don't want to deal with it rn)
     }
 
-
+    //pretty sure you're not supposed to do it like this
     @Override
     public void updateInputs(ModuleIOInputs inputs) { 
-        inputs.driveConnected = false;
-        inputs.drivePosition_Rad = 0.0;
-        inputs.driveVelocity_RadPerSec = 0.0;
-        inputs.driveAppliedVoltage_Volts = 0.0;
-        inputs.driveCurrent_Amps = 0.0;
+        inputs.driveConnected = driveDebouncer.calculate(driveSpark.getLastError() == REVLibError.kOk);
+        if(inputs.driveConnected) {
+            inputs.drivePosition_Rad = driveEncoder.getPosition().get();
+            inputs.driveVelocity_RadPerSec = driveEncoder.getVelocity().get();
+            inputs.driveAppliedVoltage_Volts = driveSpark.getBusVoltage().get() * driveSpark.getAppliedOutput().get();
+            inputs.driveCurrent_Amps = driveSpark.getOutputCurrent().get();
+        }
 
-        inputs.turnConnected = false;
-        inputs.turnPosition = new Rotation2d();
-        inputs.turnVelocity_RadPerSec = 0.0;
-        inputs.turnAppliedVoltage_Volts = 0.0;
-        inputs.turnCurrent_Amps = 0.0;
+        inputs. turnConnected = turnDebouncer.calculate(turnSpark.getLastError() == REVLibError.kOk);
+        inputs.turnPosition = Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).plus(Rotation2d.kPi);
+        inputs.turnEncoder_Volts = absoluteAnalogInput.getVoltage();
+        if(inputs.turnConnected) {
+            inputs.turnVelocity_RadPerSec = turnEncoder.getVelocity().get();
+            inputs.turnAppliedVoltage_Volts = turnSpark.getBusVoltage().get() * turnSpark.getAppliedOutput().get();
+            inputs.turnCurrent_Amps = turnSpark.getOutputCurrent().get();
+        }
     }
 
     @Override
@@ -227,16 +241,25 @@ public class ModuleIOSpark implements ModuleIO {
 
     @Override
     public void setDriveVelocity(double velo) {
-        
+        double ffvolts = DriveConstants.driveKs * Math.signum(velo)
+            + DriveConstants.driveKv * velo;
+        driveClosedLoopController.setSetpoint(
+            velo, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ffvolts, ArbFFUnits.kVoltage);
     }
 
     @Override
     public void setTurnAngle(Rotation2d rotation) {
+        double setPoint =
+            MathUtil.inputModulus(
+                rotation.plus(rotationOffset).getRadians(),
+                DriveConstants.turnPIDMinInput,
+                DriveConstants.turnPIDMaxInput);
+        double volts =
+            turnPID.calculate(
+                (Rotation2d.fromRotations(absoluteEncoder.get()).plus(Rotation2d.kPi)).getRadians(),
+                setPoint);
 
-    }
-
-    public double getAbsoluteEncoderVolts() {
-        return absoluteAnalogInput.getVoltage();
+        setTurnVoltage(volts);
     }
     
     public double getRawRadians() {

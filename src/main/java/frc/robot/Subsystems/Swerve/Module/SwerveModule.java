@@ -11,7 +11,7 @@ import frc.robot.Subsystems.Swerve.Module.ModuleIO.ModuleIOInputs;
 
 public class SwerveModule {
 	private final ModuleIO io;
-	private final ModuleIOInputs inputs = new ModuleIOInputs();
+	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 	private final DriveConstants.ModuleOrientation moduleOrientation;
 
 	private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
@@ -44,14 +44,14 @@ public class SwerveModule {
 	}
 
 	public void stop() {
-		io.setDriveOpenLoop(0.0);
-		io.setTurnOpenLoop(0.0);
+		io.setDriveVoltage(0.0);
+		io.setTurnVoltage(0.0);
 	}
 
 	@TestingOnly
 	public void runOpenLoop(double voltage) {
-		io.setTurnOpenLoop(voltage);
-		io.setDriveOpenLoop(voltage);
+		io.setTurnVoltage(voltage);
+		io.setDriveVoltage(voltage);
 	}
 
 	@TestingOnly
@@ -65,7 +65,7 @@ public class SwerveModule {
 	}
 
 	public double getPosition_Meters() {
-		return inputs.drivePosition_Rad;
+		return inputs.drivePosition_Rad * DriveConstants.WHEEL_RADIUS_METERS;
 	}
 
 	public double getVelocity_MetersPerSec() {
@@ -75,6 +75,10 @@ public class SwerveModule {
 
 	public SwerveModuleState getState() {
 		return new SwerveModuleState(getPosition_Meters(), getAngle());
+	}
+
+	public SwerveModulePosition getLatestPosition() {
+		return new SwerveModulePosition(getPosition_Meters(), getAngle())
 	}
 
 	public SwerveModulePosition[] getOdometryPositions() {

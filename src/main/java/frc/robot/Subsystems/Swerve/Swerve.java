@@ -7,7 +7,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.DriveConstants;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
@@ -34,13 +37,14 @@ public class Swerve extends SubsystemBase {
 		= new SwerveDriveKinematics(DriveConstants.MODULE_OFFSETS);
 
 	// So this needs a gyro, but we don't have a gyro. Too lazy to add one rn
-	//private SwerveDrivePoseEstimator poseEstimator
-	//	= new SwerveDrivePoseEstimator(kinematics, gyroAngle, lastModulePositions, new Pose2d());
+	// private SwerveDrivePoseEstimator poseEstimator
+	// 	= new SwerveDrivePoseEstimator(kinematics, gyroAngle, lastModulePositions, new Pose2d());
 
 	// private final SwerveSetpointGenerator setPointGenerator;
 	// private SwerveSetpoint previousSetpoint; maybe later
 
-	//do we need chassis speed?
+	private Pose2d currentPose = new Pose2d();
+	private double lastTime;
 
 	private ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
 		
@@ -92,6 +96,7 @@ public class Swerve extends SubsystemBase {
 			}
 		}
 
+		updatePoseEstimate();
 		systemState = handleStateTransitions();
 		applyStates();
 	}
@@ -143,8 +148,51 @@ public class Swerve extends SubsystemBase {
 		}
 		this.wantedState = wantedState;
 	}
+
+	public void setTargetChassisSpeeds(double xInput, double yInput, double omegaInput) {
+		// Apply deadband
+		double x = MathUtil.applyDeadband(xInput, DriveConstants.deadband);
+		double y = MathUtil.applyDeadband(yInput, DriveConstants.deadband);
+		double omega = MathUtil.applyDeadband(omegaInput, DriveConstants.deadband);
+
+		// Square value for more precise control
+		x = Math.copySign(x * x, x);
+		y = Math.copySign(y * y, y);
+		omega = Math.copySign(omega * omega, omega);
+
+		// Convert to field relative speeds
+		ChassisSpeeds speeds =
+			new ChassisSpeeds(
+				x * DriveConstants.maxSpeedMetersPerSec,
+				y * DriveConstants.maxSpeedMetersPerSec,
+				omega * DriveConstants.maxAngularSpeedRadPerSec);
+		boolean isFlipped =
+			DriverStation.getAlliance().isPresent()
+				&& DriverStation.getAlliance().get() == Alliance.Red;
+
+		// set the bot to run at the chassis speeds
+		setTargetChassisSpeeds(
+			ChassisSpeeds.fromFieldRelativeSpeeds(
+				speeds, isFlipped ? currentPose.getRotation().plus(new Rotation2d(Math.PI)) : currentPose.getRotation()));
+	}
+
 	public void setTargetChassisSpeeds(ChassisSpeeds targetChassisSpeeds) {
 		this.targetChassisSpeeds = targetChassisSpeeds;
+	}
+
+	// Here's what we'll do instead!!!
+	// This is so cursed, like never do this again
+	// If this doesn't work, just don't do field relative speeds. I really don't wanna do odom
+	@AutoLogOutput(key = "Odometry/Robot")
+	public Pose2d updatePoseEstimate() {
+		SwerveModulePosition[] lastestModulePositions
+			= new SwerveModulePosition[4];
+		for(int i = 0; i < 4; i++) {
+			lastestModulePositions[i] = modules[i].getLatestPosition();
+		}
+		currentPose = currentPose.exp(kinematics.toTwist2d(lastModulePositions, lastestModulePositions));
+		lastModulePositions = lastestModulePositions;
+		return currentPose;
 	}
 
 	public SwerveModuleState[] getModuleState()

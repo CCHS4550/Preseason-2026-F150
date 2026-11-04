@@ -1,4 +1,5 @@
 package frc.robot.Subsystems.Swerve.Module;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface ModuleIO {
@@ -15,6 +16,7 @@ public interface ModuleIO {
         public double   turnVelocity_RadPerSec = 0.0;
         public double   turnAppliedVoltage_Volts = 0.0;
         public double   turnCurrent_Amps = 0.0;
+        public double   turnEncoder_Volts = 0.0;
 
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDrivePositionsRad = new double[] {};
