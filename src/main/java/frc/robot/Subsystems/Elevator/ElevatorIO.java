@@ -2,7 +2,7 @@ package frc.robot.Subsystems.Elevator;
 
 public interface ElevatorIO {
     @AutoLog
-    public static class ElevatorIoInputs {
+    public static class ElevatorIOInputs {
         public boolean elevatorCTREConnected = false;
         public double elevatorCTREPosition = 0.0;
         public double elevatorCTREVelocity = 0.0;
@@ -30,5 +30,5 @@ public interface ElevatorIO {
 
     public default void resetEncoder() {
     }
-    public default void updateInputs(ElevatorIoInputs inputs) {}
+    public default void updateInputs(ElevatorIOInputs inputs) {}
 }

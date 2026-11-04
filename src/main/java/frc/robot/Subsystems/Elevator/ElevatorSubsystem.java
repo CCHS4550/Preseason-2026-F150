@@ -6,7 +6,7 @@ import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final ElevatorIO io;
-    private ElevatorIoInputsAutologged inputs = new ElevatorIoInputsAutologged();
+    private ElevatorIOInputsAutologged inputs = new ElevatorIOInputsAutologged();
 
     public ElevatorSubsystem(ElevatorIO io){
         this.io = io;
