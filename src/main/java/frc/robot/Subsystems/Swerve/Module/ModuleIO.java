@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Swerve.Module;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface ModuleIO {

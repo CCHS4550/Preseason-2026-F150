@@ -3,15 +3,19 @@ package frc.robot.Subsystems.Swerve;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants.DriveConstants;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
 import frc.robot.Subsystems.Swerve.Module.ModuleIO;
@@ -32,6 +36,7 @@ public class Swerve extends SubsystemBase {
 			new SwerveModulePosition()
 		};
 
+	private CommandXboxController primaryController;
 
 	private SwerveDriveKinematics kinematics 
 		= new SwerveDriveKinematics(DriveConstants.MODULE_OFFSETS);
@@ -69,13 +74,14 @@ public class Swerve extends SubsystemBase {
 		ModuleIO flModuleIO,
       	ModuleIO frModuleIO,
       	ModuleIO blModuleIO,
-      	ModuleIO brModuleIO
+      	ModuleIO brModuleIO,
+		CommandXboxController primaryController
 	) {
-
 		modules[0] = new SwerveModule(flModuleIO, ModuleOrientation.FRONT_LEFT);
     	modules[1] = new SwerveModule(frModuleIO, ModuleOrientation.FRONT_RIGHT);
     	modules[2] = new SwerveModule(blModuleIO, ModuleOrientation.BACK_LEFT);
    	 	modules[3] = new SwerveModule(brModuleIO, ModuleOrientation.BACK_RIGHT);
+		this.primaryController = primaryController;
 	}
 	
 	@Override

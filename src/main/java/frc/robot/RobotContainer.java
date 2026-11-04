@@ -6,10 +6,24 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
+import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.Module.ModuleIOSpark;
 
 public class RobotContainer {
+  
+  public final Swerve swerve;
+
+  CommandXboxController primaryController = new CommandXboxController(0);
+
+
   public RobotContainer() {
-    configureBindings();
+    swerve = new Swerve(
+      new ModuleIOSpark(ModuleOrientation.FRONT_LEFT), 
+      new ModuleIOSpark(ModuleOrientation.BACK_LEFT), 
+      new ModuleIOSpark(ModuleOrientation.FRONT_RIGHT), 
+      new ModuleIOSpark(ModuleOrientation.BACK_RIGHT));
   }
 
   private void configureBindings() {}
