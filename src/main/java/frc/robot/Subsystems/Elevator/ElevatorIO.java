@@ -23,7 +23,7 @@ public interface ElevatorIO {
 
     public default double getPosition() {
         return 0.0;
-    }
+    } 
 
     public default double getVelocity() {
         return 0.0;
@@ -31,5 +31,6 @@ public interface ElevatorIO {
 
     public default void resetEncoder() {
     }
-    public default void updateInputs(ElevatorIOInputs inputs) {}
+    public default void updateInputs(ElevatorIOInputs inputs) {
+    }
 }

@@ -1,12 +1,11 @@
 package frc.robot.Subsystems.Elevator;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final ElevatorIO io;
-    private ElevatorIOInputsAutologged inputs = new ElevatorIOInputsAutologged();
+    private ElevatorIO.ElevatorIOInputs inputs = new ElevatorIO.ElevatorIOInputs();
 
     public ElevatorSubsystem(ElevatorIO io){
         this.io = io;
