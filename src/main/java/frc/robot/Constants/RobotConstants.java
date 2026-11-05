@@ -99,5 +99,7 @@ public final class RobotConstants {
 		public static final double turnKd = 0.0;
 		public static final double turnPIDMinInput = 0; // Radians
 		public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
+
+		public static Object pigeonCanId;
 	}
 }

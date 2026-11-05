@@ -102,7 +102,6 @@ public class Swerve extends SubsystemBase {
 			}
 		}
 
-		updatePoseEstimate();
 		systemState = handleStateTransitions();
 		applyStates();
 	}
@@ -184,21 +183,6 @@ public class Swerve extends SubsystemBase {
 
 	public void setTargetChassisSpeeds(ChassisSpeeds targetChassisSpeeds) {
 		this.targetChassisSpeeds = targetChassisSpeeds;
-	}
-
-	// Here's what we'll do instead!!!
-	// This is so cursed, like never do this again
-	// If this doesn't work, just don't do field relative speeds. I really don't wanna do odom
-	@AutoLogOutput(key = "Odometry/Robot")
-	public Pose2d updatePoseEstimate() {
-		SwerveModulePosition[] lastestModulePositions
-			= new SwerveModulePosition[4];
-		for(int i = 0; i < 4; i++) {
-			lastestModulePositions[i] = modules[i].getLatestPosition();
-		}
-		currentPose = currentPose.exp(kinematics.toTwist2d(lastModulePositions, lastestModulePositions));
-		lastModulePositions = lastestModulePositions;
-		return currentPose;
 	}
 
 	public SwerveModuleState[] getModuleState()

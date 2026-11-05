@@ -23,7 +23,9 @@ public class RobotContainer {
       new ModuleIOSpark(ModuleOrientation.FRONT_LEFT), 
       new ModuleIOSpark(ModuleOrientation.BACK_LEFT), 
       new ModuleIOSpark(ModuleOrientation.FRONT_RIGHT), 
-      new ModuleIOSpark(ModuleOrientation.BACK_RIGHT));
+      new ModuleIOSpark(ModuleOrientation.BACK_RIGHT),
+      primaryController
+      );
   }
 
   private void configureBindings() {}
