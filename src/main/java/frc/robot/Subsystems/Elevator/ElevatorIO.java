@@ -4,10 +4,11 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ElevatorIO {
     @AutoLog
     public static class ElevatorIOInputs {
-        public boolean elevatorCTREConnected = false;
+        
         public double elevatorCTREPosition = 0.0;
         public double elevatorCTREVelocity = 0.0;
         public double elevatorCTREVoltage = 0.0;
+        public double elevatorCTRECurrent = 0.0;
     }
     public default void stopElevator() {
     }

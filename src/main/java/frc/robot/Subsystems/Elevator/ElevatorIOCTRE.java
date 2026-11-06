@@ -1,7 +1,12 @@
 package frc.robot.Subsystems.Elevator;
 
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.units.measure.Angle;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -9,12 +14,21 @@ public class ElevatorIOCTRE implements ElevatorIO {
 
     private final TalonFX elevatorMotor;
     private final MotionMagicVoltage motionMagicVoltage;
+    private final StatusSignal<Angle> elevPosition;
+    private final StatusSignal<Voltage> elevAppliedVoltage;
+    private final StatusSignal<Current> elevCurrent;
+    private final StatusSignal<AngularVelocity> elevVelocity;
 
     public ElevatorIOCTRE() {
         motionMagicVoltage = new MotionMagicVoltage(0.0);
         elevatorMotor = new TalonFX(
                 RobotConstants.ElevatorConstants.elevatorCanID(),
             new CANBus(RobotConstants.ElevatorConstants.getBus()));
+        
+        elevPosition = elevatorMotor.getPosition();
+        elevAppliedVoltage = elevatorMotor.getMotorVoltage();
+        elevCurrent = elevatorMotor.getSupplyCurrent();
+        elevVelocity = elevatorMotor.getVelocity();
     }
 
     @Override
@@ -54,14 +68,15 @@ public class ElevatorIOCTRE implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-                elevatorMotor.getPosition(),
-                elevatorMotor.getVelocity(),
-                elevatorMotor.getMotorVoltage(),
-                elevatorMotor.getSupplyCurrent(),
-                elevatorMotor.getStatorCurrent(),
-                elevatorMotor.getDeviceTemp());
-    }
+            BaseStatusSignal.refreshAll(elevAppliedVoltage, elevCurrent, elevPosition, elevVelocity);
+        
+            inputs.elevatorCTREPosition = elevPosition.getValueAsDouble();
+            inputs.elevatorCTREVelocity = elevVelocity.getValueAsDouble();
+            inputs.elevatorCTREVoltage = elevAppliedVoltage.getValueAsDouble();
+            inputs.elevatorCTRECurrent = elevCurrent.getValueAsDouble();
+            
+            
+            
 }
 
 final class RobotConstants {
@@ -74,4 +89,6 @@ final class RobotConstants {
             return "rio";
         }
     }
+
+}
 }
