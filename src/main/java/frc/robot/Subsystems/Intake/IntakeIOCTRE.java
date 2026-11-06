@@ -16,16 +16,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Config.BruinRobotConfig;
-import frc.robot.Constant.Constants;
 import frc.robot.Util.Phoenix6Util;
-
 
 
 public class IntakeIOCTRE implements IntakeIO{
 
  private TalonFX spinnerIntakeMotor;
-
+ 
  private TalonFXConfiguration spinnerConfig;
 
 
@@ -36,11 +33,9 @@ public class IntakeIOCTRE implements IntakeIO{
   private final StatusSignal<AngularAcceleration> spinnerAccelerationRotationsPerSecSquared;
   private final StatusSignal<Temperature> spinnerMotorTemp;
 
- public IntakeIOCTRE(BruinRobotConfig robotConfig) {
+ public IntakeIOCTRE() {
     spinnerIntakeMotor =
-        new TalonFX(
-            robotConfig.INTAKE_ROLLER.getDeviceNumber(), robotConfig.INTAKE_ROLLER.getBus());
-
+        new TalonFX();
 
    spinnerConfig = new TalonFXConfiguration();
     spinnerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;

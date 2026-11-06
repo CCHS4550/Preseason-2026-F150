@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frx.robot.Constant.Constants;
-import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystems extends SubsystemBase{
 
@@ -19,16 +17,20 @@ public class IntakeSubsystems extends SubsystemBase{
         INTAKE,
         OUTTAKE
     }
+    private WantedIntakeState wantedState=WantedIntakeState.IDLE;
+    private SystemState systemState=SystemState.IDLE;
+    private IntakeIO io;
+    private IntakeIOInputsAutologged inputs = new IntakeIOInputsAutologged();
     private void applyStates()   {
-        switch (SystemState){
+        switch (systemState){
         case IDLE:     
-        IntakeIO.spinnerIntakeVoltage(0.0);
+        io.setSpinnerVoltage(0.0);
         break;
         case INTAKE:
-        IntakeIO.spinnerIntakeVoltage(0.0);
+        io.setSpinnerVoltage(0.0);
         break;
         case OUTTAKE: 
-        IntakeIO.spinnerIntakeVoltage(0.0);
+        io.setSpinnerVoltage(0.0);
         break;
         }
 
@@ -47,20 +49,19 @@ default:
 return SystemState.IDLE; 
 }}
 
-public void stWantedIntakeState(WantedIntakeState state){
+public void setWantedIntakeState(WantedIntakeState state){
     if(state==this.wantedState) return;
     this.wantedState=state;
 }
 
 
 @Override
-public void periodic()[
-intakeIO.updateInputs(inputs);
-SystemState=handleStateTransitions();
+public void periodic(){
+io.updateInputs(inputs);
+systemState=handleStateTransitions();
 applyStates();
 
-]
-
+}
 }
 
 
@@ -68,6 +69,5 @@ applyStates();
 
 
 
-    }
-}
+   
 
