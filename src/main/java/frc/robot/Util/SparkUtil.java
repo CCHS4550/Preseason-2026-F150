@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
@@ -26,7 +28,7 @@ public class SparkUtil {
   }
 
   // same thing but can take in values as a array
-  public static void ifOK(
+  public static void ifOKMultiple(
       SparkBase spark, DoubleSupplier[] doubleSuppliers, Consumer<double[]> doubleConsumers) {
     double[] nums = new double[doubleSuppliers.length];
     for (int i = 0; i < doubleSuppliers.length; i++) {

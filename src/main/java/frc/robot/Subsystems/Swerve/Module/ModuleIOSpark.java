@@ -18,10 +18,17 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.Constants.RobotConstants.DriveConstants;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
+import frc.robot.Subsystems.Swerve.SparkOdometryThread;
+import frc.robot.Util.SparkUtil;
+
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.REVLibError;
 import com.revrobotics.ResetMode;
+
+import java.util.Queue;
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -56,6 +63,9 @@ public class ModuleIOSpark implements ModuleIO {
     private final Rotation2d rotationOffset;
 
     //odometry
+    private final Queue<Double> timeQueue;
+    private final Queue<Double> drivePosQueue;
+    private final Queue<Double> turnPosQueue;
 
     //disconnection checks
     private final Debouncer driveDebouncer = new Debouncer(0.5);
@@ -212,29 +222,77 @@ public class ModuleIOSpark implements ModuleIO {
         //reset drive encoder
         driveEncoder.setPosition(0.0);
 
-        //make odometry queues here the next person can do this
-        //No odometry for now (I don't want to deal with it rn)
+        SparkUtil.makeItWork(
+            driveSpark,
+            5,
+            () ->
+                driveSpark.configure(
+                    driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+
+        /** reset drive encoder, retrying if faulting */
+        SparkUtil.makeItWork(
+            driveSpark,
+            5,
+            () -> driveEncoder.setPosition(0.0)); // reset the sparkmax encoder b/c its not absolute
+
+        // make the queues that are filled by the odometry thread
+        // odometry thread will periodically fill these queues
+        timeQueue = SparkOdometryThread.getInstance().makeTimeQueue();
+        drivePosQueue =
+            SparkOdometryThread.getInstance()
+                .registerSparkSignal(driveSpark, driveEncoder::getPosition);
+        turnPosQueue =
+            SparkOdometryThread.getInstance()
+                .registerSparkSignal(
+                    turnSpark,
+                    () ->
+                        Rotation2d.fromRotations(absoluteEncoder.get())
+                            .minus(rotationOffset)
+                            .plus(Rotation2d.kPi)
+                            .getRadians());
     }
 
     //pretty sure you're not supposed to do it like this
     @Override
     public void updateInputs(ModuleIOInputs inputs) { 
-        inputs.driveConnected = driveDebouncer.calculate(driveSpark.getLastError() == REVLibError.kOk);
-        if(inputs.driveConnected) {
-            inputs.drivePosition_Rad = driveEncoder.getPosition();
-            inputs.driveVelocity_RadPerSec = driveEncoder.getVelocity();
-            inputs.driveAppliedVoltage_Volts = driveSpark.getBusVoltage() * driveSpark.getAppliedOutput();
-            inputs.driveCurrent_Amps = driveSpark.getOutputCurrent();
-        }
+                // update drive moter values, only accepting if no sticky fault present
+        SparkUtil.stickyFault = false;
+        SparkUtil.ifOk(driveSpark, driveEncoder::getPosition, (value) -> inputs.drivePosition_Rad = value);
+        SparkUtil.ifOk(driveSpark, driveEncoder::getVelocity, (value) -> inputs.driveVelocity_RadPerSec = value);
+        SparkUtil.ifOkMultiple(
+            driveSpark,
+            (new DoubleSupplier[] {driveSpark::getAppliedOutput, driveSpark::getBusVoltage}),
+            (double[] values) -> inputs.driveAppliedVoltage_Volts = values[0] * values[1]);
+        SparkUtil.ifOk(driveSpark, driveSpark::getOutputCurrent, (value) -> inputs.driveCurrent_Amps = value);
+        inputs.driveConnected = driveDebouncer.calculate(!SparkUtil.stickyFault);
 
-        inputs. turnConnected = turnDebouncer.calculate(turnSpark.getLastError() == REVLibError.kOk);
-        inputs.turnPosition = Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).plus(Rotation2d.kPi);
-        inputs.turnEncoder_Volts = absoluteAnalogInput.getVoltage();
-        if(inputs.turnConnected) {
-            inputs.turnVelocity_RadPerSec = turnEncoder.getVelocity();
-            inputs.turnAppliedVoltage_Volts = turnSpark.getBusVoltage() * turnSpark.getAppliedOutput();
-            inputs.turnCurrent_Amps = turnSpark.getOutputCurrent();
-        }
+        // update turn motor values, only accepting if no sticky fault present
+        SparkUtil.stickyFault = false;
+        inputs.turnPosition =
+            Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).plus(Rotation2d.kPi);
+        SparkUtil.ifOk(
+            turnSpark,
+            turnSpark.getEncoder()::getVelocity,
+            (value) -> inputs.turnVelocity_RadPerSec = value);
+        SparkUtil.ifOk(
+            turnSpark,
+            new DoubleSupplier[] {turnSpark::getAppliedOutput, turnSpark::getBusVoltage},
+            (values) -> inputs.turnAppliedVoltage_Volts = values[0] * values[1]);
+        SparkUtil.ifOk(turnSpark, turnSpark::getOutputCurrent, (value) -> inputs.turnCurrent_Amps = value);
+        inputs.turnConnected = turnDebouncer.calculate(!SparkUtil.stickyFault);
+        inputs.turnEncoderVoltage_Volts = absoluteAnalogInput.getVoltage();
+
+        // add the odometry information from the queue to the autologged array, then clear the queue
+        inputs.odometryTimestamps = timeQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryDrivePositionsRad =
+            drivePosQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryTurnPositions =
+            turnPosQueue.stream()
+                .map((Double value) -> new Rotation2d(value).minus(rotationOffset))
+                .toArray(Rotation2d[]::new);
+        timeQueue.clear();
+        drivePosQueue.clear();
+        turnPosQueue.clear();
     }
 
     @Override
