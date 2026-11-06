@@ -27,20 +27,6 @@ public class SparkUtil {
     }
   }
 
-  // same thing but can take in values as a array
-  public static void ifOKMultiple(
-      SparkBase spark, DoubleSupplier[] doubleSuppliers, Consumer<double[]> doubleConsumers) {
-    double[] nums = new double[doubleSuppliers.length];
-    for (int i = 0; i < doubleSuppliers.length; i++) {
-      nums[i] = doubleSuppliers[i].getAsDouble();
-      if (spark.getLastError() != REVLibError.kOk) {
-        stickyFault = true;
-        return;
-      }
-    }
-    doubleConsumers.accept(nums);
-  }
-
   // returns if a spark max has had an error
   public static boolean isOK(SparkBase spark) {
     boolean isFine = true;

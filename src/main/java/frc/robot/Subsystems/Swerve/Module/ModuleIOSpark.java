@@ -259,25 +259,17 @@ public class ModuleIOSpark implements ModuleIO {
         SparkUtil.stickyFault = false;
         SparkUtil.ifOk(driveSpark, driveEncoder::getPosition, (value) -> inputs.drivePosition_Rad = value);
         SparkUtil.ifOk(driveSpark, driveEncoder::getVelocity, (value) -> inputs.driveVelocity_RadPerSec = value);
-        SparkUtil.ifOkMultiple(
-            driveSpark,
-            (new DoubleSupplier[] {driveSpark::getAppliedOutput, driveSpark::getBusVoltage}),
-            (double[] values) -> inputs.driveAppliedVoltage_Volts = values[0] * values[1]);
+        SparkUtil.ifOk(driveSpark, driveSpark::getAppliedOutput, (value) -> inputs.driveAppliedVoltage_Volts = value);
+        SparkUtil.ifOk(driveSpark, driveSpark::getBusVoltage, (value) -> inputs.driveAppliedVoltage_Volts *= value);
         SparkUtil.ifOk(driveSpark, driveSpark::getOutputCurrent, (value) -> inputs.driveCurrent_Amps = value);
         inputs.driveConnected = driveDebouncer.calculate(!SparkUtil.stickyFault);
 
         // update turn motor values, only accepting if no sticky fault present
         SparkUtil.stickyFault = false;
-        inputs.turnPosition =
-            Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).plus(Rotation2d.kPi);
-        SparkUtil.ifOk(
-            turnSpark,
-            turnSpark.getEncoder()::getVelocity,
-            (value) -> inputs.turnVelocity_RadPerSec = value);
-        SparkUtil.ifOk(
-            turnSpark,
-            new DoubleSupplier[] {turnSpark::getAppliedOutput, turnSpark::getBusVoltage},
-            (values) -> inputs.turnAppliedVoltage_Volts = values[0] * values[1]);
+        inputs.turnPosition = Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).plus(Rotation2d.kPi);
+        SparkUtil.ifOk(turnSpark, turnSpark.getEncoder()::getVelocity, (value) -> inputs.turnVelocity_RadPerSec = value);
+        SparkUtil.ifOk(turnSpark, turnSpark::getAppliedOutput, (value) -> inputs.turnAppliedVoltage_Volts = value);
+        SparkUtil.ifOk(turnSpark, turnSpark::getBusVoltage, (value) -> inputs.turnAppliedVoltage_Volts *= value);
         SparkUtil.ifOk(turnSpark, turnSpark::getOutputCurrent, (value) -> inputs.turnCurrent_Amps = value);
         inputs.turnConnected = turnDebouncer.calculate(!SparkUtil.stickyFault);
         inputs.turnEncoderVoltage_Volts = absoluteAnalogInput.getVoltage();
