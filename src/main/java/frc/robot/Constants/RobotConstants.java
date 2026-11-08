@@ -13,8 +13,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 
 public class RobotConstants {
-    public static final CANBus CARNIVORE_BUS = new CANBus("spinnerIntakeMotor");
+    public static class GrabberConstants {
+		public static final int CanID = 0;
+		public static final CANBusbus = CANBus.roboRIO();
+		public static final InvertedValue direction = InvertedValue.CounterClockwise_Positive;
 
-    public static final int intakeMotorID = 0;
+		public static final double intakeVoltage = 1.0;
+	}
 }
 
