@@ -33,19 +33,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     private void applyStates(){
         switch(systemState){
             case LEVEL_2:
-              io.setPosition(ElevatorConstants.levelTwoHeightMeters);
+              io.setPositionMeters(ElevatorConstants.levelTwoHeightMeters, 75, 50);
               break;
             case LEVEL_1:
-              io.setPosition(ElevatorConstants.levelOneHeightMeters);
+              io.setPositionMeters(ElevatorConstants.levelOneHeightMeters, 75, 50);
               break;
             case GROUND:
-              io.setPosition(ElevatorConstants.groundHeightMeters);
+              io.setPositionMeters(ElevatorConstants.groundHeightMeters, 75, 50);
               break;
             case DRIVER_STATION:
-              io.setPosition(ElevatorConstants.driverStationHeightMeters);
+              io.setPositionMeters(ElevatorConstants.driverStationHeightMeters, 75, 50);
               break;
             case IDLE:
-              io.stopElevator();
+              io.stop();
+              break;
+            default:
+              io.stop();
               break;
         }
     }
@@ -65,6 +68,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             default:
               return SystemState.IDLE;
         }
+    }
+
+    public void SetWantedState(WantedState wantedState) {
+      if (this.wantedState == wantedState) return;
+      this.wantedState = wantedState;
     }
 
     @Override
