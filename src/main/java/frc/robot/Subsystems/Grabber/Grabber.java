@@ -2,6 +2,7 @@ package frc.robot.Subsystems.Grabber;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotConstants.GrabberConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -26,16 +27,16 @@ public class Grabber extends SubsystemBase{
     private void applyStates()   {
         switch (systemState){
         case INTAKE:
-            io.setSpinnerVoltage(GrabberConstants.intakeVoltage);
+            io.setVoltage(GrabberConstants.intakeVoltage);
             break;
         case OUTTAKE: 
-            io.setSpinnerVoltage(-GrabberConstants.intakeVoltage);
+            io.setVoltage(-GrabberConstants.intakeVoltage);
             break;
         case IDLE:     
-            io.setSpinnerVoltage(0.0);
+            io.setVoltage(0.0);
             break;
         default:
-            io.setSpinnerVoltage(0.0);
+            io.setVoltage(0.0);
             break;
         }
     }
