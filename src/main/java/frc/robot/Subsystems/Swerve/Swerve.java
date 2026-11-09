@@ -175,6 +175,7 @@ public class Swerve extends SubsystemBase {
 			case AUTO:
 				break;
 			case TELEOP_DRIVE:
+				setTargetChassisSpeeds();
 				SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(targetChassisSpeeds);
 				for (int i = 0; i < 4; i++) {
 					modules[i].runSwerveState(moduleStates[i]);

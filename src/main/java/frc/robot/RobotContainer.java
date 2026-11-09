@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
 import frc.robot.Subsystems.Swerve.Swerve;
+import frc.robot.Subsystems.Swerve.Gyro.GyroIOPigeon;
 import frc.robot.Subsystems.Swerve.Module.ModuleIOSpark;
 
 public class RobotContainer {
@@ -20,6 +21,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     swerve = new Swerve(
+      new GyroIOPigeon(),
       new ModuleIOSpark(ModuleOrientation.FRONT_LEFT), 
       new ModuleIOSpark(ModuleOrientation.BACK_LEFT), 
       new ModuleIOSpark(ModuleOrientation.FRONT_RIGHT), 

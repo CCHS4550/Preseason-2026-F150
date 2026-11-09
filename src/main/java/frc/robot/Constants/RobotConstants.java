@@ -46,6 +46,7 @@ public final class RobotConstants {
 		public static final int backRightTurnCanId = 67;
 		public static final int backLeftTurnCanId = 66;
 
+		public static int pigeonCanId = 0;
 
 		public static final int frontLeftDriveCanId = 12;
 		public static final int frontRightDriveCanId = 13;
@@ -99,7 +100,5 @@ public final class RobotConstants {
 		public static final double turnKd = 0.0;
 		public static final double turnPIDMinInput = 0; // Radians
 		public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
-
-		public static Object pigeonCanId;
 	}
 }

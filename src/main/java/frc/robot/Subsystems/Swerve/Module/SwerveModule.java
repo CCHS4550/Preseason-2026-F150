@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.RobotConstants.DriveConstants;
-import frc.robot.Constants.TestingOnly;
 import frc.robot.Subsystems.Swerve.Module.ModuleIO.ModuleIOInputs;
+import org.littletonrobotics.junction.AutoLog;
 
 // add logging if you feel like it
 
@@ -48,13 +48,11 @@ public class SwerveModule {
 		io.setTurnVoltage(0.0);
 	}
 
-	@TestingOnly
 	public void runOpenLoop(double voltage) {
 		io.setTurnVoltage(voltage);
 		io.setDriveVoltage(voltage);
 	}
 
-	@TestingOnly
 	public void reset() {
 		io.setTurnAngle(new Rotation2d(0.0));
 		io.setDriveVelocity(0.0);
@@ -78,7 +76,7 @@ public class SwerveModule {
 	}
 
 	public SwerveModulePosition getLatestPosition() {
-		return new SwerveModulePosition(getPosition_Meters(), getAngle())
+		return new SwerveModulePosition(getPosition_Meters(), getAngle());
 	}
 
 	public SwerveModulePosition[] getOdometryPositions() {
