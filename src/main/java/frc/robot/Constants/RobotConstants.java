@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 public final class RobotConstants {
     public static class ElevatorConstants{

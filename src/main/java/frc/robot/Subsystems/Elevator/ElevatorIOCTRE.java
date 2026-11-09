@@ -4,12 +4,18 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import frc.robot.Constants.ElevatorConstants;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
 public class ElevatorIOCTRE implements ElevatorIO {
 
@@ -28,7 +34,7 @@ public class ElevatorIOCTRE implements ElevatorIO {
     public ElevatorIOCTRE() {
         elevatorMotor = new TalonFX(
                 ElevatorConstants.elevatorCanID,
-            new CANBus(ElevatorConstants.bus));
+            ElevatorConstants.bus);
 
         elevatorConfig = new TalonFXConfiguration();
         elevatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -50,7 +56,7 @@ public class ElevatorIOCTRE implements ElevatorIO {
         elevatorConfig.MotionMagic.MotionMagicAcceleration = 50;
 
         if(elevatorMotor.getConfigurator().apply(elevatorConfig) != StatusCode.OK) {
-            throw new RuntimeException("Failed to apply Elevator configs: " + statusCode);
+            throw new RuntimeException("Failed to apply Elevator configs");
         }
 
         elevatorMotor.setPosition(ElevatorConstants.groundHeightMeters * ElevatorConstants.conversionFactor);
@@ -79,10 +85,8 @@ public class ElevatorIOCTRE implements ElevatorIO {
 
     @Override
     public void setPositionMeters(double positionMeters, double veloRotPerSec, double accelRotPerSec) {
-        elevatorMotor.setControl(motionMagicVoltage
+        elevatorMotor.setControl(elevatorController
             .withPosition(positionMeters * ElevatorConstants.conversionFactor)
-            .withVelocity(veloRotPerSec)
-            .withAcceleration(accelRotPerSec)
             );
     }
 
