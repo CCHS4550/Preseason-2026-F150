@@ -19,6 +19,7 @@ public class SwerveModule {
 	public SwerveModule(ModuleIO io, DriveConstants.ModuleOrientation moduleOrientation) {
 		this.io = io;
 		this.moduleOrientation = moduleOrientation;
+		reset();
 	}
 
 	public void periodic() {
