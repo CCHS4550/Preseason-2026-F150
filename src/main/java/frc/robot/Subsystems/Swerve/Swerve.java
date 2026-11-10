@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants.DriveConstants;
@@ -111,10 +113,7 @@ public class Swerve extends SubsystemBase {
 
 		if (DriverStation.isDisabled()) 
 		{
-			for (var module : modules) 
-			{
-				module.stop();
-			}
+			stop();
 		}
 
 		double[] sampleTimestamps =
@@ -182,16 +181,10 @@ public class Swerve extends SubsystemBase {
 				}
 				break;
 			case IDLE:
-				for (var module : modules) 
-				{
-					module.stop();
-				}
+				stop();
 				break;
 			default:
-				for (var module : modules) 
-				{
-					module.stop();
-				}
+				stop();
 				break;
 		}
 	}
@@ -214,6 +207,24 @@ public class Swerve extends SubsystemBase {
 			return;
 		}
 		this.wantedState = wantedState;
+	}
+
+	public Command driveCommand(ChassisSpeeds speeds) {
+		return new InstantCommand(() -> {
+			setTargetChassisSpeeds(speeds);
+		});
+	}
+	
+	public Command stopCommand() {
+		return new InstantCommand(() -> {
+			stop();
+		});
+	}
+
+	public void stop() {
+		for (var module : modules) {
+			module.stop();
+		}
 	}
 
 	public void setTargetChassisSpeeds() {
