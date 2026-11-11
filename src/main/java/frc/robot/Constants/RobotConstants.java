@@ -81,17 +81,17 @@ public final class RobotConstants {
     	public static final Rotation2d backRightOffset = Rotation2d.fromRadians(0.0);
     	public static final Rotation2d backLeftOffset = Rotation2d.fromRadians(0.0);
 
-		public static final int frontLeftTurnCanId = 69;
-		public static final int frontRightTurnCanId = 68;
-		public static final int backRightTurnCanId = 67;
-		public static final int backLeftTurnCanId = 66;
+		public static final int frontLeftTurnCanId = 6;
+		public static final int frontRightTurnCanId = 7;
+		public static final int backRightTurnCanId = 8;
+		public static final int backLeftTurnCanId = 5;
 
 		public static int pigeonCanId = 0;
 
-		public static final int frontLeftDriveCanId = 12;
-		public static final int frontRightDriveCanId = 13;
-		public static final int backRightDriveCanId = 257;
-		public static final int backLeftDriveCanId = 2525;
+		public static final int frontLeftDriveCanId = 2;
+		public static final int frontRightDriveCanId = 3;
+		public static final int backRightDriveCanId = 4;
+		public static final int backLeftDriveCanId = 1;
 
 		public static final boolean frontLeftTurnInverted = true;
 		public static final boolean frontRightTurnInverted = true;
