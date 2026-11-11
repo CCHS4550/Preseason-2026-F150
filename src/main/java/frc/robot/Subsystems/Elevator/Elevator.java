@@ -1,11 +1,19 @@
 package frc.robot.Subsystems.Elevator;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
     private final ElevatorIO io;
     private ElevatorIO.ElevatorIOInputsAutologged inputs = new ElevatorIO.ElevatorIOInputsAutologged();
+
+    public Trigger L2 = new Trigger(() -> 
+      (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) > -0.01 && 
+      (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) < 0.01);
+    public Trigger DS = new Trigger(() -> 
+      (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) > -0.01 && 
+      (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) < 0.01);
 
     public Elevator(ElevatorIO io){
         this.io = io;
