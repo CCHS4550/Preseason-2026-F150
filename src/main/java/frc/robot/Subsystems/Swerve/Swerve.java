@@ -3,10 +3,6 @@ package frc.robot.Subsystems.Swerve;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
-import com.google.flatbuffers.Constants;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;

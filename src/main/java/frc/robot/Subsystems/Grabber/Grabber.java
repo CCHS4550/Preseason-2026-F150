@@ -23,6 +23,10 @@ public class Grabber extends SubsystemBase{
 
     private WantedState wantedState = WantedState.IDLE;
     private SystemState systemState = SystemState.IDLE;
+
+    public Grabber(GrabberIO io) {
+        this.io = io;
+    }
     
     private void applyStates()   {
         switch (systemState){

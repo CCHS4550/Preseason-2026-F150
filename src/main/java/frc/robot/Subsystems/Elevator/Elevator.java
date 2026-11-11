@@ -3,11 +3,11 @@ package frc.robot.Subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
     private final ElevatorIO io;
-    private ElevatorIO.ElevatorIOInputs inputs = new ElevatorIO.ElevatorIOInputs();
+    private ElevatorIO.ElevatorIOInputsAutologged inputs = new ElevatorIO.ElevatorIOInputsAutologged();
 
-    public ElevatorSubsystem(ElevatorIO io){
+    public Elevator(ElevatorIO io){
         this.io = io;
     }
 
@@ -70,7 +70,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    public void SetWantedState(WantedState wantedState) {
+    public void setWantedState(WantedState wantedState) {
       if (this.wantedState == wantedState) return;
       this.wantedState = wantedState;
     }

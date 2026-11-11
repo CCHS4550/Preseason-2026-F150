@@ -2,44 +2,6 @@ package frc.robot.Constants;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
-
-public final class RobotConstants {
-    public static class ElevatorConstants{
-        public static final int elevatorCanID = 999;
-		public static final CANBus bus = CANBus.roboRIO();
-
-        public static final InvertedValue elevatorDirection = InvertedValue.CounterClockwise_Positive;
-
-		public static final double kP = 1.0;
-		public static final double kI = 0.0;
-		public static final double kD = 0.0;
-
-		public static final double kS = 0.5;
-		public static final double kV = 0.0;
-		public static final double kG = 0.5;
-
-		public static final double conversionFactor = 1.0; // rotations / meters
-        public static final double levelTwoHeightMeters = 30; //placeholder change later
-        public static final double levelOneHeightMeters = 15; //placeholder change later
-        public static final double groundHeightMeters = 0; //placeholder change later
-        public static final double driverStationHeightMeters = 0; //placeholder change later
-    }
-}
-import com.ctre.phoenix6.CANBus;
-
-import com.ctre.phoenix6.signals.InvertedValue;
-
-public class RobotConstants {
-    public static class GrabberConstants {
-		public static final int CanID = 0;
-		public static final CANBus bus = CANBus.roboRIO();
-		public static final InvertedValue direction = InvertedValue.CounterClockwise_Positive;
-
-		public static final double intakeVoltage = 1.0;
-	}
-}
-
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -140,5 +102,34 @@ public final class RobotConstants {
 		public static final double turnKd = 0.0;
 		public static final double turnPIDMinInput = 0; // Radians
 		public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
+	}
+
+	public static class ElevatorConstants{
+        public static final int elevatorCanID = 999;
+		public static final CANBus bus = CANBus.roboRIO();
+
+        public static final InvertedValue elevatorDirection = InvertedValue.CounterClockwise_Positive;
+
+		public static final double kP = 1.0;
+		public static final double kI = 0.0;
+		public static final double kD = 0.0;
+
+		public static final double kS = 0.5;
+		public static final double kV = 0.0;
+		public static final double kG = 0.5;
+
+		public static final double conversionFactor = 1.0; // rotations / meters
+        public static final double levelTwoHeightMeters = 30; //placeholder change later
+        public static final double levelOneHeightMeters = 15; //placeholder change later
+        public static final double groundHeightMeters = 0; //placeholder change later
+        public static final double driverStationHeightMeters = 0; //placeholder change later
+    }
+
+	public static class GrabberConstants {
+		public static final int CanID = 0;
+		public static final CANBus bus = CANBus.roboRIO();
+		public static final InvertedValue direction = InvertedValue.CounterClockwise_Positive;
+
+		public static final double intakeVoltage = 1.0;
 	}
 }

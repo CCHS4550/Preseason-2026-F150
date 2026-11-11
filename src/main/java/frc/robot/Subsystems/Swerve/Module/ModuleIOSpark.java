@@ -2,7 +2,6 @@ package frc.robot.Subsystems.Swerve.Module;
 
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -23,11 +22,9 @@ import frc.robot.Util.SparkUtil;
 
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.PersistMode;
-import com.revrobotics.REVLibError;
 import com.revrobotics.ResetMode;
 
 import java.util.Queue;
-import java.util.function.DoubleSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
