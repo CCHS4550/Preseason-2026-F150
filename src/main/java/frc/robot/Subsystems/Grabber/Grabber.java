@@ -1,14 +1,11 @@
 package frc.robot.Subsystems.Grabber;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.GrabberConstants;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Grabber extends SubsystemBase{
     private GrabberIO io;
-    private GrabberIOInputsAutologged inputs = new GrabberIOInputsAutologged();
+    private GrabberIOInputsAutoLogged inputs = new GrabberIOInputsAutoLogged();
 
     public enum WantedState{
         IDLE,

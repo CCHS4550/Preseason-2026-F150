@@ -118,6 +118,8 @@ public final class RobotConstants {
 		public static final double kV = 0.0;
 		public static final double kG = 0.5;
 
+		public static final double positionError = 0.01;
+
 		public static final double conversionFactor = 1.0; // rotations / meters
         public static final double levelTwoHeightMeters = 30; //placeholder change later
         public static final double levelOneHeightMeters = 15; //placeholder change later

@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
@@ -40,7 +39,7 @@ public class RobotContainer {
     elevator = new Elevator(
       new ElevatorIOCTRE()
     );
-    configureBindings();
+    //configureBindings();
   }
 
   private void configureBindings() {
@@ -68,7 +67,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return 
+    return new InstantCommand();
   }
 
   public Swerve getSwerveSubsystem() {

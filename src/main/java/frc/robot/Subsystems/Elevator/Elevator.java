@@ -1,24 +1,28 @@
 package frc.robot.Subsystems.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.RobotConstants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
     private final ElevatorIO io;
-    private ElevatorIO.ElevatorIOInputsAutologged inputs = new ElevatorIO.ElevatorIOInputsAutologged();
+    private ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    public Trigger L2 = new Trigger(() -> 
-      (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) > -0.01 && 
-      (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) < 0.01);
-    public Trigger DS = new Trigger(() -> 
-      (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) > -0.01 && 
-      (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) < 0.01);
+    public final Trigger L2;
+    public final Trigger DS;
 
 
     public Elevator(ElevatorIO io){
         this.io = io;
+        L2 = new Trigger(() -> 
+          (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) > -ElevatorConstants.positionError && 
+          (io.getPositionMeters() - ElevatorConstants.levelTwoHeightMeters) < ElevatorConstants.positionError);
+        DS = new Trigger(() -> 
+          (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) > -ElevatorConstants.positionError && 
+          (io.getPositionMeters() - ElevatorConstants.driverStationHeightMeters) < ElevatorConstants.positionError);
+
     }
 
     public enum WantedState {
@@ -92,9 +96,18 @@ public class Elevator extends SubsystemBase {
         applyStates();
     }
 
-    public Command gotoLevel() {
-      return run(coroutine -> {
-        
-      });
+    public Command gotoLevel(WantedState level) {
+      return Commands.sequence(
+        Commands.run(() -> {
+          if(level == WantedState.IDLE) return;
+          setWantedState(level);
+        }, this),
+      Commands.waitUntil(
+        (level != WantedState.LEVEL_2)
+          ? L2
+          : (level != WantedState.DRIVER_STATION)
+            ? DS
+            : ()  -> Boolean.TRUE
+      ));
     }
 }
