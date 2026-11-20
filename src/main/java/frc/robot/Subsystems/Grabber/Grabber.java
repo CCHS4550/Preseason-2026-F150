@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Grabber;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants.GrabberConstants;
 
@@ -67,6 +69,7 @@ public class Grabber extends SubsystemBase{
         io.updateInputs(inputs);
         systemState = handleStateTransitions();
         applyStates();
+        Logger.processInputs("Grabber", inputs);
     }
 }
 

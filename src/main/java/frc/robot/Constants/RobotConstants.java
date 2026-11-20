@@ -30,7 +30,7 @@ public final class RobotConstants {
 		public static final double maxSpeedMetersPerSec = 4.8;
 		public static final double maxAngularSpeedRadPerSec = maxSpeedMetersPerSec / driveBaseRadius;
 
-		public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(2);;
+		public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
 		public static final Translation2d[] MODULE_OFFSETS = new Translation2d[] {
          	new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
           	new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
@@ -38,17 +38,17 @@ public final class RobotConstants {
           	new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
         };
 
-		public static final Rotation2d frontLeftOffset = Rotation2d.fromRadians(0.0);
-    	public static final Rotation2d frontRightOffset = Rotation2d.fromRadians(0.0);
-    	public static final Rotation2d backRightOffset = Rotation2d.fromRadians(0.0);
-    	public static final Rotation2d backLeftOffset = Rotation2d.fromRadians(0.0);
+		public static final Rotation2d frontLeftOffset = Rotation2d.fromRadians(-1.253301561828973 + 2.0 * Math.PI);
+    	public static final Rotation2d frontRightOffset = Rotation2d.fromRadians(1.0845694286707908);
+    	public static final Rotation2d backLeftOffset = Rotation2d.fromRadians(5.3068783348983235);
+		public static final Rotation2d backRightOffset = Rotation2d.fromRadians(4.962061865855092);
 
 		public static final int frontLeftTurnCanId = 6;
 		public static final int frontRightTurnCanId = 7;
 		public static final int backRightTurnCanId = 8;
 		public static final int backLeftTurnCanId = 5;
 
-		public static int pigeonCanId = 0;
+		public static int pigeonCanId = 9;
 
 		public static final int frontLeftDriveCanId = 2;
 		public static final int frontRightDriveCanId = 3;
@@ -59,11 +59,11 @@ public final class RobotConstants {
 		public static final boolean frontRightTurnInverted = true;
 		public static final boolean backLeftTurnInverted = true;
 		public static final boolean backRightTurnInverted = true;
-
-		public static final boolean frontLeftDriveInverted = true;
-		public static final boolean frontRightDriveInverted = true;
-		public static final boolean backLeftDriveInverted = false;
-		public static final boolean backRightDriveInverted = false;
+   
+		public static final boolean frontLeftDriveInverted = false;
+		public static final boolean frontRightDriveInverted = false;
+		public static final boolean backLeftDriveInverted = true;
+		public static final boolean backRightDriveInverted = true;
 
 		 public static final int driveMotorCurrentLimit = 60;
 		public static final double wheelRadiusMeters = Units.inchesToMeters(2);
@@ -82,30 +82,30 @@ public final class RobotConstants {
 		public static final double turnEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
 		public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
-		public static final int frontRightTurnEncoder = 0;
+		public static final int frontRightTurnEncoder = 3;
     	public static final int frontLeftTurnEncoder = 2;
-    	public static final int backRightTurnEncoder = 1;
-    	public static final int backLeftTurnEncoder = 3;
+    	public static final int backRightTurnEncoder = 0;
+    	public static final int backLeftTurnEncoder = 1;
 
 		// all borrowed from cherry blossom
 		// Drive PID configuration
 		public static final double driveKp = 0.01;
-		public static final double driveKd = 0.0;
+		public static final double driveKd = 0.01;
 
 		public static final double driveKs = 0.16681;
-		public static final double driveKv = 2.609 - 2;
+		public static final double driveKv = 0.609;
 		public static final double driveKa = 0.51582;
 
    		 // Turn PID configuration
 		public static final double turnKp = 3.14;
 		public static final double turnKi = 0.0;
-		public static final double turnKd = 0.0;
+		public static final double turnKd = 0.02;
 		public static final double turnPIDMinInput = 0; // Radians
 		public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 	}
 
 	public static class ElevatorConstants{
-        public static final int elevatorCanID = 999;
+        public static final int elevatorCanID = 17;
 		public static final CANBus bus = CANBus.roboRIO();
 
         public static final InvertedValue elevatorDirection = InvertedValue.CounterClockwise_Positive;
@@ -128,10 +128,10 @@ public final class RobotConstants {
     }
 
 	public static class GrabberConstants {
-		public static final int CanID = 0;
+		public static final int CanID = 16;
 		public static final CANBus bus = CANBus.roboRIO();
 		public static final InvertedValue direction = InvertedValue.CounterClockwise_Positive;
 
-		public static final double intakeVoltage = 1.0;
+		public static final double intakeVoltage =   1.0;
 	}
 }

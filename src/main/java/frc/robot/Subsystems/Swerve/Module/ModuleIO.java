@@ -29,9 +29,11 @@ public interface ModuleIO {
 
     public default void setDriveVelocity(double velocity_RadPerSec) {}
 
-    public default void setTurnAngle(Rotation2d rotation) {}
+    public default double setTurnAngle(Rotation2d rotation) {return 0.0;}
 
     public default void setDriveVoltage(double voltage) {}
 
     public default void setTurnVoltage(double voltage) {}
+
+    public default double getRawRadians() {return 0.0;}
 }

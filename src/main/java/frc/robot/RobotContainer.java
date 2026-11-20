@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
 import frc.robot.Subsystems.Elevator.ElevatorIOCTRE;
+import frc.robot.Subsystems.Elevator.Elevator.WantedState;
 import frc.robot.Subsystems.Elevator.Elevator;
 import frc.robot.Subsystems.Grabber.Grabber;
 import frc.robot.Subsystems.Grabber.GrabberIOCTRE;
@@ -39,31 +40,38 @@ public class RobotContainer {
     elevator = new Elevator(
       new ElevatorIOCTRE()
     );
-    //configureBindings();
+    configureBindings();
   }
 
   private void configureBindings() {
     primaryController
-      .leftBumper()
+      .rightBumper()
       .onTrue(new InstantCommand(() -> { grabber.setWantedState(Grabber.WantedState.INTAKE); }))
       .onFalse(new InstantCommand(() -> { grabber.setWantedState(Grabber.WantedState.IDLE); }));
 
     primaryController
-      .rightBumper()
+      .leftBumper()
       .onTrue(new InstantCommand(() -> { grabber.setWantedState(Grabber.WantedState.OUTTAKE); }))
       .onFalse(new InstantCommand(() -> { grabber.setWantedState(Grabber.WantedState.IDLE); }));
     
     primaryController
       .a()
-      .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.DRIVER_STATION); }));
+      .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.OPENLOOP); }))
+      .whileTrue(new InstantCommand(() -> { elevator.setVoltage(4.0); }))
+      .onFalse(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.IDLE); }));
 
     primaryController
       .b()
-      .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.LEVEL_1); }));
+      .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.OPENLOOP); }))
+      .whileTrue(new InstantCommand(() -> { elevator.setVoltage(-4.0); }))
+      .onFalse(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.IDLE); }));
 
+    // primaryController
+    //   .x()
+    //   .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.LEVEL_2); }));
     primaryController
-      .x()
-      .onTrue(new InstantCommand(() -> { elevator.setWantedState(Elevator.WantedState.LEVEL_2); }));
+      .y()
+      .onTrue(new InstantCommand(() -> { swerve.setWantedState(Swerve.WantedState.IDLE);}));
   }
 
   public Command getAutonomousCommand() {

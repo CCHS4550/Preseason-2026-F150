@@ -26,6 +26,8 @@ import com.revrobotics.ResetMode;
 
 import java.util.Queue;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -125,7 +127,7 @@ public class ModuleIOSpark implements ModuleIO {
         driveClosedLoopController = driveSpark.getClosedLoopController(); 
         turnClosedLoopController = turnSpark.getClosedLoopController(); 
         //ADD PID STUFF CONFIG
-        turnPID.enableContinuousInput(0, Math.PI);
+        turnPID.enableContinuousInput(0, 2.0 * Math.PI);
         //configs
         //turn
         SparkMaxConfig turnConfig = new SparkMaxConfig();
@@ -174,10 +176,12 @@ public class ModuleIOSpark implements ModuleIO {
             .outputCurrentPeriodMs(20);
 
         //configure turn motor
-        turnSpark.configure(
-                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-
+        SparkUtil.makeItWork(
+            turnSpark,
+            5,
+            () ->
+                turnSpark.configure(
+                    turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
         //DRIVE
         //some of the things are the exact same
@@ -213,12 +217,7 @@ public class ModuleIOSpark implements ModuleIO {
             .busVoltagePeriodMs(20)
             .outputCurrentPeriodMs(20);
 
-        driveSpark.configure(
-            driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         //reset drive encoder
-        driveEncoder.setPosition(0.0);
-
         SparkUtil.makeItWork(
             driveSpark,
             5,
@@ -277,7 +276,7 @@ public class ModuleIOSpark implements ModuleIO {
             drivePosQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryTurnPositions =
             turnPosQueue.stream()
-                .map((Double value) -> new Rotation2d(value).minus(rotationOffset))
+                .map((Double value) -> new Rotation2d(value))
                 .toArray(Rotation2d[]::new);
         timeQueue.clear();
         drivePosQueue.clear();
@@ -304,21 +303,25 @@ public class ModuleIOSpark implements ModuleIO {
     }
 
     @Override
-    public void setTurnAngle(Rotation2d rotation) {
-        double setPoint =
-            MathUtil.inputModulus(
-                rotation.plus(rotationOffset).getRadians(),
-                DriveConstants.turnPIDMinInput,
-                DriveConstants.turnPIDMaxInput);
-        double volts =
-            turnPID.calculate(
-                (Rotation2d.fromRotations(absoluteEncoder.get()).plus(Rotation2d.kPi)).getRadians(),
-                setPoint);
+    public double setTurnAngle(Rotation2d rotation) {
+        double measurement =
+        Rotation2d.fromRotations(absoluteEncoder.get())
+            .minus(rotationOffset)
+            .plus(Rotation2d.kPi)
+            .getRadians();
 
+        measurement = MathUtil.inputModulus(
+            measurement, 0, 2 * Math.PI);
+
+        double setPoint = MathUtil.inputModulus(
+            rotation.getRadians(), 0, 2 * Math.PI);
+
+        double volts = turnPID.calculate(measurement, setPoint);
         setTurnVoltage(volts);
+        return Rotation2d.fromRotations(absoluteEncoder.get()).getDegrees();
     }
     
     public double getRawRadians() {
-        return Rotation2d.fromRotations(absoluteEncoder.get()).getRadians();
+        return Rotation2d.fromRotations(absoluteEncoder.get()).minus(rotationOffset).getRadians();
     }
 }

@@ -94,6 +94,7 @@ public class Swerve extends SubsystemBase {
 		this.primaryController = primaryController;
 
 		SparkOdometryThread.getInstance().start();
+		targetChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 	}
 	
 	@Override
@@ -205,6 +206,13 @@ public class Swerve extends SubsystemBase {
 		this.wantedState = wantedState;
 	}
 
+	public void log() {
+		for (int i = 0; i < 4; i++) {
+			System.out.print(modules[i].getRawRadians() + " ");
+		}
+		System.out.println();
+	}
+
 	public Command driveCommand(ChassisSpeeds speeds) {
 		return new InstantCommand(() -> {
 			setTargetChassisSpeeds(speeds);
@@ -219,20 +227,22 @@ public class Swerve extends SubsystemBase {
 
 	public void stop() {
 		for (var module : modules) {
+			setTargetChassisSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0));
 			module.stop();
 		}
 	}
 
 	public void setTargetChassisSpeeds() {
 		// Apply deadband
-		double x = MathUtil.applyDeadband(primaryController.getLeftX(), DriveConstants.deadband);
-		double y = MathUtil.applyDeadband(primaryController.getLeftY(), DriveConstants.deadband);
-		double omega = MathUtil.applyDeadband(primaryController.getRightX(), DriveConstants.deadband);
+		double x = MathUtil.applyDeadband(primaryController.getLeftY()/2.0, DriveConstants.deadband);
+		double y = MathUtil.applyDeadband(primaryController.getLeftX()/2.0, DriveConstants.deadband);
+		double omega = MathUtil.applyDeadband(primaryController.getRightX()/2.0, DriveConstants.deadband);
 
 		// Square value for more precise control
-		x = Math.copySign(x * x, x);
-		y = Math.copySign(y * y, y);
-		omega = Math.copySign(omega * omega, omega);
+		// x = Math.copySign(x * x, x);
+		// y = Math.copySign(y * y, y);
+		omega 
+		= Math.copySign(omega * omega, omega);
 
 		// Convert to field relative speeds
 		ChassisSpeeds speeds =

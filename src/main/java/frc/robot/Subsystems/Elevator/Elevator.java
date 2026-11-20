@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Elevator;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,15 +32,17 @@ public class Elevator extends SubsystemBase {
         LEVEL_1,
         GROUND,
         DRIVER_STATION,
-        IDLE
-    }
+        IDLE,
+        OPENLOOP
+      }
 
     public enum SystemState {
         LEVEL_2,
         LEVEL_1,
         GROUND,
         DRIVER_STATION,
-        IDLE
+        IDLE,
+        OPENLOOP
     }
 
     WantedState wantedState = WantedState.IDLE;
@@ -61,6 +65,8 @@ public class Elevator extends SubsystemBase {
             case IDLE:
               io.stop();
               break;
+            case OPENLOOP:
+              break;
             default:
               io.stop();
               break;
@@ -79,6 +85,8 @@ public class Elevator extends SubsystemBase {
               return SystemState.DRIVER_STATION;
             case IDLE:
               return SystemState.IDLE;
+            case OPENLOOP:
+              return SystemState.OPENLOOP;
             default:
               return SystemState.IDLE;
         }
@@ -89,11 +97,16 @@ public class Elevator extends SubsystemBase {
       this.wantedState = wantedState;
     }
 
+    public void setVoltage(double volts) {
+      io.setVoltage(volts);
+    }
+
     @Override
     public void periodic(){
         io.updateInputs(inputs);
         systemState = handleStateTransitions();
         applyStates();
+        Logger.processInputs("Elevator", inputs);
     }
 
     public Command gotoLevel(WantedState level) {

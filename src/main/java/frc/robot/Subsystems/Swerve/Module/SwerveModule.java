@@ -1,9 +1,12 @@
 package frc.robot.Subsystems.Swerve.Module;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.RobotConstants.DriveConstants;
+import frc.robot.Constants.RobotConstants.DriveConstants.ModuleOrientation;
 
 // add logging if you feel like it
 
@@ -32,14 +35,23 @@ public class SwerveModule {
 			Rotation2d turnAngle = inputs.odometryTurnPositions[i];
 			odometryPositions[i] = new SwerveModulePosition(position_Meters, turnAngle);
 		}
+
+		Logger.processInputs(switch(moduleOrientation) {
+			case FRONT_LEFT -> "Swerve/FL_Module";
+			case FRONT_RIGHT -> "Swerve/FR_Module";
+			case BACK_LEFT -> "Swerve/BL_Module";
+			case BACK_RIGHT -> "Swerve/BR_Module";
+		}, inputs);
 	}
 
 	public void runSwerveState(SwerveModuleState state) {
 		state.optimize(getAngle());
 		state.cosineScale(getAngle());
+		System.out.printf("%s angle: %.2f speed: %.2f\n", moduleOrientation, state.angle.getDegrees(), state.speedMetersPerSecond);
 
 		io.setDriveVelocity(state.speedMetersPerSecond / DriveConstants.WHEEL_RADIUS_METERS);
 		io.setTurnAngle(state.angle);
+		
 	}
 
 	public void stop() {
@@ -58,7 +70,20 @@ public class SwerveModule {
 	}
 
 	public Rotation2d getAngle() {
-		return inputs.turnPosition;
+		Rotation2d angle = inputs.turnPosition * 
+		switch(moduleOrientation) {
+			case BACK_RIGHT -> DriveConstants.backRightTurnInverted ? 1.0 : -1.0;
+			case FRONT_LEFT -> DriveConstants.frontLeftDriveInverted ? 1.0 : -1.0;
+			case BACK_LEFT -> DriveConstants.backLeftTurnInverted ? 1.0 : -1.0;
+			case FRONT_RIGHT -> DriveConstants.frontRightDriveInverted ? 1.0 : -1.0;
+		};
+		if(angle.getRadians() > 2.0 * Math.PI) {
+			angle.minus(Rotation2d.fromRadians(2.0 * Math.PI));
+		}
+		if(angle.getRadians() < 0.0) {
+			angle.plus(Rotation2d.fromRadians(2.0 * Math.PI));
+		}
+		return angle;
 	}
 
 	public double getPosition_Meters() {
@@ -72,6 +97,10 @@ public class SwerveModule {
 
 	public SwerveModuleState getState() {
 		return new SwerveModuleState(getPosition_Meters(), getAngle());
+	}
+
+	public double getRawRadians() {
+		return io.getRawRadians();
 	}
 
 	public SwerveModulePosition getLatestPosition() {
