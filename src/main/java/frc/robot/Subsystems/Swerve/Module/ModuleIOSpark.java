@@ -13,6 +13,8 @@ import edu.wpi.first.math.filter.Debouncer;
 //USING CLOSED LOOP
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.Constants.RobotConstants.DriveConstants;
@@ -26,6 +28,7 @@ import com.revrobotics.ResetMode;
 
 import java.util.Queue;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -48,7 +51,7 @@ public class ModuleIOSpark implements ModuleIO {
     private final SparkBase turnSpark;
 
     //CLOSED LOOP CONTROLLER
-    private final SparkClosedLoopController turnClosedLoopController;
+    //private final SparkClosedLoopController turnClosedLoopController;
     private final SparkClosedLoopController driveClosedLoopController;
 
     private final PIDController turnPID =
@@ -56,7 +59,7 @@ public class ModuleIOSpark implements ModuleIO {
 
     //encoders (only need relative for drive)
     private final RelativeEncoder driveEncoder;
-    private final AbsoluteEncoder turnEncoder;
+    //private final AbsoluteEncoder turnEncoder;
 
     //account for offset (true angle and encoder)
     private final Rotation2d rotationOffset;
@@ -121,11 +124,11 @@ public class ModuleIOSpark implements ModuleIO {
             MotorType.kBrushless);
 
         driveEncoder = driveSpark.getEncoder();
-        turnEncoder = turnSpark.getAbsoluteEncoder();
+        //turnEncoder = turnSpark.getAbsoluteEncoder();
 
 
         driveClosedLoopController = driveSpark.getClosedLoopController(); 
-        turnClosedLoopController = turnSpark.getClosedLoopController(); 
+        //turnClosedLoopController = turnSpark.getClosedLoopController(); 
         //ADD PID STUFF CONFIG
         turnPID.enableContinuousInput(0, 2.0 * Math.PI);
         //configs
@@ -133,11 +136,10 @@ public class ModuleIOSpark implements ModuleIO {
         SparkMaxConfig turnConfig = new SparkMaxConfig();
         //some are inverted we just set the right ones with FRONT_LEFT-3 to set the right motor
         switch (module) {
-            case FRONT_LEFT : turnConfig.inverted(DriveConstants.frontLeftTurnInverted);  break;
-            case FRONT_RIGHT: turnConfig.inverted(DriveConstants.frontRightTurnInverted); break;
-            case BACK_LEFT  : turnConfig.inverted(DriveConstants.backLeftTurnInverted);   break;
-            case BACK_RIGHT : turnConfig.inverted(DriveConstants.backRightTurnInverted);  break;
-            default :         turnConfig.inverted(false);
+            case FRONT_LEFT : turnConfig.inverted(DriveConstants.frontLeftTurnInverted);  absoluteEncoder.setInverted(!DriveConstants.frontLeftTurnInverted); break;
+            case FRONT_RIGHT: turnConfig.inverted(DriveConstants.frontRightTurnInverted); absoluteEncoder.setInverted(!DriveConstants.frontRightTurnInverted); break;
+            case BACK_LEFT  : turnConfig.inverted(DriveConstants.backLeftTurnInverted);   absoluteEncoder.setInverted(!DriveConstants.backLeftTurnInverted); break;
+            case BACK_RIGHT : turnConfig.inverted(DriveConstants.backRightTurnInverted);  absoluteEncoder.setInverted(!DriveConstants.backRightTurnInverted); break;
         }
 
         //idleMode is Brake
@@ -281,6 +283,8 @@ public class ModuleIOSpark implements ModuleIO {
         timeQueue.clear();
         drivePosQueue.clear();
         turnPosQueue.clear();
+
+        inputs.currentState = new SwerveModulePosition(inputs.driveVelocity_RadPerSec * DriveConstants.WHEEL_RADIUS_METERS, inputs.turnPosition);
     }
 
     @Override

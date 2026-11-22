@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Swerve.Module;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,7 +48,8 @@ public class SwerveModule {
 	public void runSwerveState(SwerveModuleState state) {
 		state.optimize(getAngle());
 		state.cosineScale(getAngle());
-		System.out.printf("%s angle: %.2f speed: %.2f\n", moduleOrientation, state.angle.getDegrees(), state.speedMetersPerSecond);
+		
+		//System.out.printf("%s angle: %.2f speed: %.2f\n", moduleOrientation, state.angle.getDegrees(), state.speedMetersPerSecond);
 
 		io.setDriveVelocity(state.speedMetersPerSecond / DriveConstants.WHEEL_RADIUS_METERS);
 		io.setTurnAngle(state.angle);
@@ -70,13 +72,13 @@ public class SwerveModule {
 	}
 
 	public Rotation2d getAngle() {
-		Rotation2d angle = inputs.turnPosition.times(
-		switch(moduleOrientation) {
-			case BACK_RIGHT -> DriveConstants.backRightTurnInverted ? 1.0 : -1.0;
-			case FRONT_LEFT -> DriveConstants.frontLeftDriveInverted ? 1.0 : -1.0;
-			case BACK_LEFT -> DriveConstants.backLeftTurnInverted ? 1.0 : -1.0;
-			case FRONT_RIGHT -> DriveConstants.frontRightDriveInverted ? 1.0 : -1.0;
-		});
+		Rotation2d angle = inputs.turnPosition;//.times(
+		// switch(moduleOrientation) {
+		// 	case BACK_RIGHT -> DriveConstants.backRightTurnInverted ? 1.0 : -1.0;
+		// 	case FRONT_LEFT -> DriveConstants.frontLeftDriveInverted ? 1.0 : -1.0;
+		// 	case BACK_LEFT -> DriveConstants.backLeftTurnInverted ? 1.0 : -1.0;
+		// 	case FRONT_RIGHT -> DriveConstants.frontRightDriveInverted ? 1.0 : -1.0;
+		// });
 		if(angle.getRadians() > 2.0 * Math.PI) {
 			angle.minus(Rotation2d.fromRadians(2.0 * Math.PI));
 		}
@@ -91,12 +93,11 @@ public class SwerveModule {
 	}
 
 	public double getVelocity_MetersPerSec() {
-		return getPosition_Meters() 
-				* DriveConstants.WHEEL_RADIUS_METERS;
+		return inputs.driveVelocity_RadPerSec;
 	}
 
 	public SwerveModuleState getState() {
-		return new SwerveModuleState(getPosition_Meters(), getAngle());
+		return new SwerveModuleState(getVelocity_MetersPerSec(), getAngle());
 	}
 
 	public double getRawRadians() {

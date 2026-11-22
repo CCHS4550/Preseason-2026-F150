@@ -3,6 +3,8 @@ package frc.robot.Subsystems.Swerve;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -41,6 +43,21 @@ public class Swerve extends SubsystemBase {
         new SwerveModulePosition()
       };
 
+	@AutoLogOutput
+	private SwerveModuleState[] currentStates = new SwerveModuleState[] {
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
+      };
+	@AutoLogOutput
+	private SwerveModuleState[] requestedStates = new SwerveModuleState[] {
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
+      };
+
 	private final GyroIO gyro;
 	private GyroIOInputs gyroInputs = new GyroIOInputs();
 	private Rotation2d gyroAngle = new Rotation2d();
@@ -58,7 +75,8 @@ public class Swerve extends SubsystemBase {
 
 	// private final SwerveSetpointGenerator setPointGenerator;
 	// private SwerveSetpoint previousSetpoint; //maybe later
-
+	
+	@AutoLogOutput
 	private ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
 		
 	public enum WantedState
@@ -158,6 +176,9 @@ public class Swerve extends SubsystemBase {
 			// odometry information, coordinated with timestamps
 		}
 
+		for(int i = 0; i < 4; i++) {
+			currentStates[i] = modules[i].getState();
+		}
 
 		systemState = handleStateTransitions();
 		applyStates();
@@ -173,9 +194,14 @@ public class Swerve extends SubsystemBase {
 			case TELEOP_DRIVE:
 				setTargetChassisSpeeds();
 				SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(targetChassisSpeeds);
-				for (int i = 0; i < 4; i++) {
-					modules[i].runSwerveState(moduleStates[i]);
-				}
+				modules[1].runSwerveState(moduleStates[1]);
+				modules[2].runSwerveState(moduleStates[2]);
+				requestedStates = moduleStates;
+				targetChassisSpeeds.omegaRadiansPerSecond *= -1;
+				moduleStates = kinematics.toSwerveModuleStates(targetChassisSpeeds);
+				modules[0].runSwerveState(moduleStates[0]);
+				modules[3].runSwerveState(moduleStates[3]);
+				targetChassisSpeeds.omegaRadiansPerSecond *= -1;
 				break;
 			case IDLE:
 				stop();
@@ -234,9 +260,9 @@ public class Swerve extends SubsystemBase {
 
 	public void setTargetChassisSpeeds() {
 		// Apply deadband
-		double x = MathUtil.applyDeadband(primaryController.getLeftY()/2.0, DriveConstants.deadband);
-		double y = MathUtil.applyDeadband(primaryController.getLeftX()/2.0, DriveConstants.deadband);
-		double omega = MathUtil.applyDeadband(primaryController.getRightX()/2.0, DriveConstants.deadband);
+		double x = -MathUtil.applyDeadband(primaryController.getLeftY()/3.0, DriveConstants.deadband);
+		double y = -MathUtil.applyDeadband(primaryController.getLeftX()/3.0, DriveConstants.deadband);
+		double omega = -MathUtil.applyDeadband(primaryController.getRightX()/3.0, DriveConstants.deadband);
 
 		// Square value for more precise control
 		// x = Math.copySign(x * x, x);

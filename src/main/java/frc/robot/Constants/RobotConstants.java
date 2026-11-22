@@ -19,7 +19,7 @@ public final class RobotConstants {
 			BACK_RIGHT
 		}
 
-		public static final double deadband = 0.2;
+		public static final double deadband = 0.05;
 
 		// Taken with measuring tape, distance between centers of wheels
 		public static final double trackWidth = Units.inchesToMeters(19.375);
@@ -38,7 +38,7 @@ public final class RobotConstants {
           	new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
         };
 
-		public static final Rotation2d frontLeftOffset = Rotation2d.fromRadians(-1.253301561828973 + 2.0 * Math.PI);
+		public static final Rotation2d frontLeftOffset = Rotation2d.fromRadians(-1.453301561828973 + 2.0 * Math.PI);
     	public static final Rotation2d frontRightOffset = Rotation2d.fromRadians(1.0845694286707908);
     	public static final Rotation2d backLeftOffset = Rotation2d.fromRadians(5.3068783348983235);
 		public static final Rotation2d backRightOffset = Rotation2d.fromRadians(4.962061865855092);
@@ -60,10 +60,10 @@ public final class RobotConstants {
 		public static final boolean backLeftTurnInverted = true;
 		public static final boolean backRightTurnInverted = true;
    
-		public static final boolean frontLeftDriveInverted = false;
-		public static final boolean frontRightDriveInverted = false;
-		public static final boolean backLeftDriveInverted = true;
-		public static final boolean backRightDriveInverted = true;
+		public static final boolean frontLeftDriveInverted = true;
+		public static final boolean frontRightDriveInverted = true;
+		public static final boolean backLeftDriveInverted = false;
+		public static final boolean backRightDriveInverted = false;
 
 		 public static final int driveMotorCurrentLimit = 60;
 		public static final double wheelRadiusMeters = Units.inchesToMeters(2);
@@ -132,6 +132,6 @@ public final class RobotConstants {
 		public static final CANBus bus = CANBus.roboRIO();
 		public static final InvertedValue direction = InvertedValue.CounterClockwise_Positive;
 
-		public static final double intakeVoltage =   1.0;
+		public static final double intakeVoltage =   2.0;
 	}
 }

@@ -3,6 +3,8 @@ package frc.robot.Subsystems.Swerve.Module;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface ModuleIO {
     @AutoLog
@@ -23,6 +25,8 @@ public interface ModuleIO {
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDrivePositionsRad = new double[] {};
         public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+
+        public SwerveModulePosition currentState = new SwerveModulePosition();
     }
 
     public default void updateInputs(ModuleIOInputs inputs) {}
