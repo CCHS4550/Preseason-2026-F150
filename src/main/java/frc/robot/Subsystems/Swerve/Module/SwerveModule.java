@@ -70,13 +70,13 @@ public class SwerveModule {
 	}
 
 	public Rotation2d getAngle() {
-		Rotation2d angle = inputs.turnPosition * 
+		Rotation2d angle = inputs.turnPosition.times(
 		switch(moduleOrientation) {
 			case BACK_RIGHT -> DriveConstants.backRightTurnInverted ? 1.0 : -1.0;
 			case FRONT_LEFT -> DriveConstants.frontLeftDriveInverted ? 1.0 : -1.0;
 			case BACK_LEFT -> DriveConstants.backLeftTurnInverted ? 1.0 : -1.0;
 			case FRONT_RIGHT -> DriveConstants.frontRightDriveInverted ? 1.0 : -1.0;
-		};
+		});
 		if(angle.getRadians() > 2.0 * Math.PI) {
 			angle.minus(Rotation2d.fromRadians(2.0 * Math.PI));
 		}
